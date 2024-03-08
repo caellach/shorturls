@@ -1,0 +1,27 @@
+{
+    "app": {
+        "port": 3000,
+        "prefork": false,
+        "concurrency": 1024,
+        "enable_print_routes": true,
+        "debug": false
+    },
+    "mongodb": {
+        "uri": "",
+        "port": 27017,
+        "database": "",
+        "username": "",
+        "password": ""
+    },
+    "providers": {
+        "discord": {
+            "api_base_url": "https://discord.com/api/v10",
+            "client_id": "<CLIENTID>",
+            "client_secret": "<CLIENTSECRET>"
+        }
+    },
+    "wordlist": {
+        "file_hash": "<SHA256_HASH>"
+        "file_path": "<PATH_TO_WORDLIST>.json"
+    }
+}

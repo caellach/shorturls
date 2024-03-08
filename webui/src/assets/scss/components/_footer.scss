@@ -1,0 +1,15 @@
+.footer-wrapper {
+    // gradient
+    background: linear-gradient(to top, #000000 0%, #00000030 100%);
+    padding: 1rem;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
+    height: 32px;
+    .dev-footer {
+        text-align: center;
+        // vertical centering
+        margin-top: -8px;
+    }
+}

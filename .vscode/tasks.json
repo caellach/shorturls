@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Go Server (DEBUG)",
+            "type": "shell",
+            "command": "go build -gcflags='all=-N -l' -o __debug_go_shorturlserver.exe",
+            "options": {
+                "cwd": "${workspaceFolder}\\api-server\\go"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

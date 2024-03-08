@@ -1,0 +1,17 @@
+// intentionally blank
+
+// center Auth div
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.main-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 114px);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}

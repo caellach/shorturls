@@ -1,0 +1,23 @@
+.navbar-wrapper {
+    background-color: #43434350;
+    
+    padding: 1rem;
+    display: flex;
+    .navbar-start {
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex: 1;
+    }
+    .navbar-end {
+        justify-content: flex-end;
+        align-items: flex-end;
+        flex: 1;
+        display: flex;
+        .profile-wrapper {
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            text-align: right;
+        }
+    }
+}

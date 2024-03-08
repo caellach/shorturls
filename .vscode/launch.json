@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Go Server (DEBUG)",
+            "type": "go",
+            "request": "launch",
+            "mode": "exec",
+            "cwd": "${workspaceFolder}\\api-server\\go",
+            "program": "${workspaceFolder}\\api-server\\go\\__debug_go_shorturlserver.exe",
+            "preLaunchTask": "Build Go Server (DEBUG)"
+        }
+    ]
+}
