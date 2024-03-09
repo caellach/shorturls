@@ -33,7 +33,7 @@ func LoadConfig(configParams *ConfigParams) *Config {
 			Debug:             false,
 		},
 		WordList: WordListConfig{
-			FilePath: "./wordlist-8192.json",
+			FilePath: "./wordlist.json",
 			FileHash: "REQUIRED",
 		},
 		MongoDB: MongoDBConfig{

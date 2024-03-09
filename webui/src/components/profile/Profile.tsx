@@ -1,27 +1,23 @@
 // NavBar component
 // Only loaded when the user is authenticated
 
-import { logout } from "@/features/auth/authSlice";
 import { StoreState } from "@/store";
-import { useDispatch, useSelector } from "react-redux";
 import {
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledDropdown,
-} from "reactstrap";
+  CSSProperties,
+  FC,
+  KeyboardEventHandler,
+  MouseEventHandler,
+} from "react";
+import { useSelector } from "react-redux";
 
-const Profile = () => {
-  const dispatch = useDispatch();
-  const handleLogoutClick = () => {
-    console.log("logout clicked");
-    dispatch(logout());
-  };
+type ProfileProps = {
+  className?: string;
+  onClick?: MouseEventHandler<HTMLDivElement>;
+  onKeyUp?: KeyboardEventHandler<HTMLDivElement>;
+  style?: CSSProperties;
+};
 
-  const handleSettingsClick = () => {
-    console.log("settings clicked");
-  };
-
+const Profile: FC<ProfileProps> = ({ className, onClick, onKeyUp, style }) => {
   const auth = useSelector((state: StoreState) => state.auth);
 
   const userAvatar =
@@ -30,22 +26,18 @@ const Profile = () => {
       : `${window.location.origin}/public/images/profile.png`;
   return (
     <>
-      <UncontrolledDropdown inNavbar>
-        <DropdownToggle tag="div" className="profile-toggle">
-          <div className="profile-wrapper">
-            <img src={userAvatar} alt="avatar" className="profile-avatar" />
-            <div className="profile-info">
-              <div className="username">{auth.claims.username}</div>
-              <div className="auth-provider">{auth.claims.provider}</div>
-            </div>
-          </div>
-        </DropdownToggle>
-        <DropdownMenu>
-          <DropdownItem onClick={handleSettingsClick}>Settings</DropdownItem>
-          <DropdownItem divider />
-          <DropdownItem onClick={handleLogoutClick}>Logout</DropdownItem>
-        </DropdownMenu>
-      </UncontrolledDropdown>
+      <div
+        className={className ?? "user-profile"}
+        onClick={onClick ?? (() => {})}
+        onKeyUp={onKeyUp ?? (() => {})}
+        style={style ?? {}}
+      >
+        <img src={userAvatar} alt="avatar" className="profile-avatar" />
+        <div className="profile-info">
+          <div className="username">{auth.claims.username}</div>
+          <div className="auth-provider">{auth.claims.provider}</div>
+        </div>
+      </div>
     </>
   );
 };

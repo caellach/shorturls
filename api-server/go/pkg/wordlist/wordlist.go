@@ -12,6 +12,11 @@ import (
 	"github.com/caellach/shorturl/api-server/go/pkg/config"
 )
 
+/*
+ * The format for the wordlist is super simple:	it's a JSON array of strings.
+ * The index of the strings is also the number id for looking up the string.
+ */
+
 func LoadWordList(WordListConfig *config.WordListConfig) *WordList {
 	// check wordlist file hash
 	fileHash := getFileSha256(WordListConfig.FilePath)

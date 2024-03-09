@@ -1,7 +1,22 @@
-import React from "react";
+import Footer from "@/components/footer/Footer";
+import ProfileMenu from "@/components/profile/ProfileMenu";
 import { Outlet } from "react-router-dom";
 
-const Layout = () => {
+const LoggedInLayout = () => {
+  return (
+    <>
+      <div id="bm-outer-container">
+        <div className="main-wrapper">
+          <Outlet />
+        </div>
+        <Footer />
+      </div>
+      <ProfileMenu />
+    </>
+  );
+};
+
+const AnonLayout = () => {
   return (
     <div>
       <Outlet />
@@ -9,4 +24,4 @@ const Layout = () => {
   );
 };
 
-export default Layout;
+export default { LoggedInLayout, AnonLayout };

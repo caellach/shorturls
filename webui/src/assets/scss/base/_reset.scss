@@ -110,3 +110,12 @@ html, body, #root, #root > div {
     width: 100%;
     overflow: hidden;
 }
+
+#root {
+    background-color: black;
+}
+
+#bm-outer-container {
+    background: #333333;
+    position: absolute;
+}

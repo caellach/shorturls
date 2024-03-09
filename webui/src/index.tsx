@@ -1,3 +1,4 @@
+import "@/extensions/string";
 import React, { StrictMode } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { createRoot } from "react-dom/client";

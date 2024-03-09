@@ -203,6 +203,7 @@ func getDiscordMeUserInfo(token string) (DiscordUserInfo, error) {
 
 func getAuthProviderOAuthURL(c *fiber.Ctx) error {
 	authProvider := c.Params("authProvider")
+	authProvider = strings.ToLower(authProvider)
 
 	// check if the auth provider is valid
 	authProviderBaseUrl, exists := validAuthProviders[authProvider]

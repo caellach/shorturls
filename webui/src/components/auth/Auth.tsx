@@ -13,7 +13,7 @@ const handleAuthProvider = async (provider: string) => {
   window.location.href = authUrl;
 };
 
-const Auth = (props: Props) => {
+const AuthComponent = (props: Props) => {
   return (
     <div>
       <button
@@ -21,10 +21,10 @@ const Auth = (props: Props) => {
         type="button"
         onClick={() => handleAuthProvider(props.name)}
       >
-        Login with {props.name}
+        Login with {props.name.toTitleCase()}
       </button>
     </div>
   );
 };
 
-export default Auth;
+export default AuthComponent;
