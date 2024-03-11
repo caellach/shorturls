@@ -9,7 +9,7 @@ const Main = () => {
   const auth = useSelector((state: StoreState) => state.auth);
 
   if (auth.isLoggedIn) {
-    return <Navigate to="/apps" replace />;
+    return <Navigate to="/shorturls" replace />;
   }
 
   const dispatch = useDispatch();

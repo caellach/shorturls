@@ -1,4 +1,3 @@
-// NavBar component
 // Only loaded when the user is authenticated
 
 import { logout } from "@/features/auth/authSlice";
@@ -6,11 +5,14 @@ import { KeyboardEvent, useState } from "react";
 import { useDispatch } from "react-redux";
 import { scaleRotate as Menu } from "react-burger-menu";
 import Profile from "./Profile";
+import MenuHeader from "../menu/MenuHeader";
+import MenuItem from "../menu/MenuItem";
+import MenuFooter from "../menu/MenuFooter";
 
 const ProfileMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleStateChange = (state: any) => {
+  const handleStateChange = (state: { isOpen: boolean }) => {
     setIsOpen(state.isOpen);
   };
 
@@ -30,7 +32,7 @@ const ProfileMenu = () => {
 
   return (
     <>
-      <div>
+      <div className="profile-menu-wrapper">
         <Profile
           onClick={toggleMenu}
           onKeyUp={(e: KeyboardEvent<HTMLDivElement>) => {
@@ -47,21 +49,31 @@ const ProfileMenu = () => {
           }}
         />
         <Menu
-          pageWrapId="bm-outer-container"
+          pageWrapId="content-container"
           outerContainerId="root"
           right
-          width={"300px"}
           isOpen={isOpen}
           onStateChange={handleStateChange}
           customBurgerIcon={false}
         >
-          <Profile className="menu-user-profile" />
-          <a id="settings" className="menu-item" onClick={handleSettingsClick}>
-            Settings
-          </a>
-          <a id="logout" className="menu-item" onClick={handleLogoutClick}>
-            Logout
-          </a>
+          <MenuHeader>
+            <Profile
+              className="menu-user-profile"
+              onClick={toggleMenu}
+              onKeyUp={(e: KeyboardEvent<HTMLDivElement>) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  toggleMenu();
+                }
+              }}
+            />
+          </MenuHeader>
+          <MenuItem
+            id="settings"
+            displayText="Settings"
+            onClick={handleSettingsClick}
+          />
+          <MenuItem displayText="Logout" onClick={handleLogoutClick} />
+          <MenuFooter />
         </Menu>
       </div>
     </>

@@ -34,8 +34,10 @@ const Profile: FC<ProfileProps> = ({ className, onClick, onKeyUp, style }) => {
       >
         <img src={userAvatar} alt="avatar" className="profile-avatar" />
         <div className="profile-info">
-          <div className="username">{auth.claims.username}</div>
-          <div className="auth-provider">{auth.claims.provider}</div>
+          <div className="username">{auth.claims.display_name}</div>
+          <div className="auth-provider">
+            {auth.claims.provider.toTitleCase()}
+          </div>
         </div>
       </div>
     </>

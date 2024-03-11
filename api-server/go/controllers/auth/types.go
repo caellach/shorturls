@@ -16,18 +16,26 @@ type ProviderDocument struct {
 }
 
 type UserDocument struct {
-	Id       primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Avatar   string             `json:"avatar" bson:"avatar"`
-	Email    string             `json:"email" bson:"email"`
-	Username string             `json:"username" bson:"username"`
+	Id          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Avatar      string             `json:"avatar" bson:"avatar"`
+	Email       string             `json:"email" bson:"email"`
+	Username    string             `json:"username" bson:"username"`
+	DisplayName string             `json:"display_name" bson:"display_name"`
+	Locale      string             `json:"locale" bson:"locale"`
+	MFAEnabled  bool               `json:"mfa_enabled" bson:"mfa_enabled"`
+	Verified    bool               `json:"verified" bson:"verified"`
 }
 
 type UpdatedUserDocument struct {
-	Id        primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
-	Avatar    string             `json:"avatar" bson:"avatar"`
-	Email     string             `json:"email" bson:"email"`
-	Username  string             `json:"username" bson:"username"`
-	Providers []ProviderDocument `json:"providers" bson:"providers"`
+	Id          primitive.ObjectID `json:"_id,omitempty" bson:"_id,omitempty"`
+	Username    string             `json:"username" bson:"username"`
+	DisplayName string             `json:"display_name" bson:"display_name"`
+	Avatar      string             `json:"avatar" bson:"avatar"`
+	Email       string             `json:"email" bson:"email"`
+	Locale      string             `json:"locale" bson:"locale"`
+	MFAEnabled  bool               `json:"mfa_enabled" bson:"mfa_enabled"`
+	Verified    bool               `json:"verified" bson:"verified"`
+	Providers   []ProviderDocument `json:"providers" bson:"providers"`
 }
 
 type DiscordTokenResponse struct {
@@ -39,9 +47,12 @@ type DiscordTokenResponse struct {
 }
 
 type DiscordUserInfo struct {
-	Id       string `json:"id"`
-	Username string `json:"username"`
-	Avatar   string `json:"avatar"`
-	Email    string `json:"email"`
-	Verified bool   `json:"verified"`
+	Id          string `json:"id"`
+	Username    string `json:"username"`
+	DisplayName string `json:"global_name"`
+	Avatar      string `json:"avatar"`
+	Email       string `json:"email"`
+	Locale      string `json:"locale"`
+	MFAEnabled  bool   `json:"mfa_enabled"`
+	Verified    bool   `json:"verified"`
 }

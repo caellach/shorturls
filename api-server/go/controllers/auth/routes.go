@@ -41,10 +41,15 @@ func authProviderCallback(c *fiber.Ctx) error {
 
 	// get the token from the auth provider from the code
 
-	username := ""
-	avatar := ""
 	providerId := ""
+	username := ""
+	displayName := ""
+	avatar := ""
 	email := ""
+	locale := ""
+	mfaEnabled := false
+	verified := false
+
 	if authState.Provider == "discord" {
 		// pull username from the token
 		tokenResponse, err := getTokenFromCodeDiscord(code)
@@ -59,8 +64,12 @@ func authProviderCallback(c *fiber.Ctx) error {
 
 		providerId = discordUserInfo.Id
 		username = discordUserInfo.Username
+		displayName = discordUserInfo.DisplayName
 		avatar = discordUserInfo.Avatar
 		email = discordUserInfo.Email
+		locale = discordUserInfo.Locale
+		mfaEnabled = discordUserInfo.MFAEnabled
+		verified = discordUserInfo.Verified
 	} else {
 		return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "invalid provider", errors.New("invalid provider"))
 	}
@@ -68,9 +77,13 @@ func authProviderCallback(c *fiber.Ctx) error {
 	// create a new user in mongo if one doesn't exist; else, update the user
 	// FindOneAndUpdate
 	newDocument := UserDocument{ // to avoid an upsert conflict we create the Document without the providers
-		Avatar:   avatar,
-		Email:    email,
-		Username: username,
+		Avatar:      avatar,
+		Email:       email,
+		Username:    username,
+		DisplayName: displayName,
+		Locale:      locale,
+		MFAEnabled:  mfaEnabled,
+		Verified:    verified,
 	}
 	opts := options.FindOneAndUpdate().SetUpsert(true).SetReturnDocument(options.After)
 	filter := bson.M{
@@ -105,7 +118,11 @@ func authProviderCallback(c *fiber.Ctx) error {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub":          updatedDocument.Id.Hex(),
 		"username":     updatedDocument.Username,
+		"display_name": updatedDocument.DisplayName,
 		"avatar":       updatedDocument.Avatar,
+		"locale":       updatedDocument.Locale,
+		"mfa_enabled":  updatedDocument.MFAEnabled,
+		"verified":     updatedDocument.Verified,
 		"provider":     authState.Provider,
 		"provider_sub": providerId,
 		"exp":          expiresAt,

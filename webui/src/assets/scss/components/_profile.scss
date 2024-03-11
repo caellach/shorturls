@@ -3,7 +3,8 @@
     position: fixed;
     top: 0px;
     right: 0px;
-    padding: 4px;    
+    padding: 4px;
+    cursor: pointer;
 }
 
 .profile-avatar {
@@ -19,21 +20,7 @@
     }
 }
 
+
 .profile-toggle {
     cursor: pointer;
 }
-
-.bm-item {
-    background-color: lightgrey;
-    color: black;
-    padding: 8px;
-}
-
-.menu-user-profile {
-    background-color: grey;
-    padding: 8px;
-    color: whitesmoke;
-    display: flex !important;
-    border-radius: 4px;
-}
-
