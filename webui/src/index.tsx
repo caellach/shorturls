@@ -8,13 +8,17 @@ import { store, persistor } from "@/store";
 
 import App from "@/App";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "react-virtualized/styles.css";
+import "react-toastify/dist/ReactToastify.css";
 import "@/assets/scss/style.scss";
+import { ToastContainer } from "react-toastify";
 
 const container = document.getElementById("root");
 // biome-ignore lint/style/noNonNullAssertion: <explanation>
 const root = createRoot(container!);
 const app = (
   <BrowserRouter>
+    <ToastContainer />
     <StrictMode>
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>

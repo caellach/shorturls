@@ -25,22 +25,20 @@ const Profile: FC<ProfileProps> = ({ className, onClick, onKeyUp, style }) => {
       ? `https://cdn.discordapp.com/avatars/${auth.claims.provider_sub}/${auth.claims.avatar}.png?size=128`
       : `${window.location.origin}/public/images/profile.png`;
   return (
-    <>
-      <div
-        className={className ?? "user-profile"}
-        onClick={onClick ?? (() => {})}
-        onKeyUp={onKeyUp ?? (() => {})}
-        style={style ?? {}}
-      >
-        <img src={userAvatar} alt="avatar" className="profile-avatar" />
-        <div className="profile-info">
-          <div className="username">{auth.claims.display_name}</div>
-          <div className="auth-provider">
-            {auth.claims.provider.toTitleCase()}
-          </div>
+    <div
+      className={className ?? "user-profile"}
+      onClick={onClick ?? (() => {})}
+      onKeyUp={onKeyUp ?? (() => {})}
+      style={style ?? {}}
+    >
+      <img src={userAvatar} alt="avatar" className="profile-avatar" />
+      <div className="profile-info">
+        <div className="username">{auth.claims.display_name}</div>
+        <div className="auth-provider">
+          {auth.claims.provider.toTitleCase()}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

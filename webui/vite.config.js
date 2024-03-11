@@ -5,6 +5,8 @@ import { createHtmlPlugin } from "vite-plugin-html";
 import checker from "vite-plugin-checker";
 import path from "path";
 
+import fixReactVirtualized from "esbuild-plugin-react-virtualized";
+
 import { dependencies } from "./package.json";
 function renderChunks(deps) {
   const chunks = {};
@@ -19,6 +21,12 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, "env");
 
   return {
+    optimizeDeps: {
+      esbuildOptions: {
+        // this is temporary until this is either fixed in vite or react-virtualized
+        plugins: [fixReactVirtualized],
+      },
+    },
     server: { hmr: true },
     plugins: [
       react({

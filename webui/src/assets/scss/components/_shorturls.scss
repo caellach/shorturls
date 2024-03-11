@@ -1,7 +1,4 @@
-
 .shorturls-list {
-    display: flex;
-    flex-direction: column;
     padding: 0px;
     margin: 0px;
     width: 100%;
@@ -9,29 +6,10 @@
     text-align: center;
 }
 
-.shorturls-list-item {
-    display: flex;
-    flex: 1 0 auto;
-    flex-direction: row;
-    justify-content:space-around;
-    align-items: center;
-    padding: 8px;
-    background-color: #333333;
-    color: whitesmoke;
-    padding: 8px;
-    border-top: grey 2px solid;
-}
-
-.shorturls-list-item.deleted {
-    // strike through
-    text-decoration: line-through;
-}
-
-.shorturls-list-item.header {
+.ReactVirtualized__Table__headerRow {
     background-color: grey;
     padding: 8px;
     color: whitesmoke;
-    display: flex;
     border-radius: 4px;
     font-weight: bold;
     text-align: center;
@@ -40,61 +18,14 @@
 }
 
 // alternate row colors
-.shorturls-list-item:nth-child(2n) {
-    background-color: #444444;
-}
-
-button.copy {
-    background-color: #333333;
-    color: whitesmoke;
-    border: none;
-    padding: 8px;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-button.copy:hover {
+.ReactVirtualized__Table__row.even-row {
     background-color: #555555;
 }
 
-button.copy:active {
+.ReactVirtualized__Table__row.even-row > .ReactVirtualized__Table__rowColumn > button.copy {
+    background-color: #555555;
+}
+
+button.copy:hover, .ReactVirtualized__Table__row.even-row > .ReactVirtualized__Table__rowColumn > button.copy:hover {
     background-color: #666666;
-}
-
-
-button.destroy {
-    background-color: #ff0000;
-    color: whitesmoke;
-    border: none;
-    padding: 8px;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-button.destroy:hover {
-    background-color: #ff3333;
-}
-
-button.destroy:active {
-    background-color: #ff6666;
-}   
-
-button.save {
-    background-color: #00ff00;
-    color: #333333;
-    border: none;
-    padding: 8px;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-button.save:hover {
-    background-color: #33ff33;
-}
-
-button.save:active {
-    background-color: #66ff66;
 }

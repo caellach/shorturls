@@ -120,10 +120,12 @@ func putUrl(c *fiber.Ctx) error {
 		return utils.GenerateJsonErrorMessage(c, fiber.StatusInternalServerError, "failed to generate url id", errors.New("failed to generate url id"))
 	}
 	url := UrlDocument{
-		Id:      urlId,
-		UserId:  user.Id,
-		Url:     putUrlRequest.Url,
-		Created: primitive.DateTime(time.Now().UnixNano() / int64(time.Millisecond)),
+		Id:       urlId,
+		UserId:   user.Id,
+		Url:      putUrlRequest.Url,
+		Created:  primitive.DateTime(time.Now().UnixNano() / int64(time.Millisecond)),
+		UseCount: 0,
+		LastUsed: primitive.DateTime(0),
 	}
 
 	// the document should already exist because generateValidShortUrlId will only return a unique id if it can insert it into the collection

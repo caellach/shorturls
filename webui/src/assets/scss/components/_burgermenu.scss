@@ -38,6 +38,17 @@
     flex: 1 0 auto;
 }
 
+.bm-item.active {
+    background-color: #444444;
+    color: white;
+    font-weight: bold;
+}
+
+.bm-item.disabled {
+    text-decoration: line-through;
+    cursor: not-allowed;
+}
+
 .bm-item.menu-header {
     background-color: grey;
     padding: 8px;
@@ -50,13 +61,14 @@
     border-top: none;
 }
 
-.bm-item.menu-user-profile {
+.bm-item > .menu-user-profile {
     background-color: grey;
     padding: 8px;
     color: whitesmoke;
     display: flex !important;
     border-radius: 4px;
     border-top: none;
+    cursor: pointer;
 }
 
 .bm-item.menu-footer {
@@ -88,3 +100,4 @@
         width: 150px;
     }
 }
+

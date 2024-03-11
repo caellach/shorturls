@@ -68,6 +68,7 @@ const ProfileMenu = () => {
             />
           </MenuHeader>
           <MenuItem
+            disabled
             id="settings"
             displayText="Settings"
             onClick={handleSettingsClick}

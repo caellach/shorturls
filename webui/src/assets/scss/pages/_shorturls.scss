@@ -1,0 +1,29 @@
+.shorturls-content-wrapper {
+    height: 90%;
+    width: 90%;
+    margin: 0 auto;
+}
+
+@media screen and (max-width: 768px) {
+    .shorturls-content-wrapper {
+        width: 100%;
+    }
+}
+
+.shorturls-title-wrapper {
+    text-align: center;
+    padding-bottom: 16px;
+}
+
+.shorturls-title-wrapper > h1 {
+    display: inline-block;
+    text-align: center;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.shorturls-title-wrapper > div {
+    position: relative;
+    float: right;
+    padding-right: 8px;
+}

@@ -6,7 +6,7 @@
 
 body {
     margin: 0;
-    line-height: 1;
+    line-height: 1.2;
     background-color: #333333;
     color: whitesmoke;
 }
@@ -118,4 +118,14 @@ html, body, #root, #content-container {
 #content-container {
     background: #333333;
     position: absolute;
+}
+
+p.no-interaction {
+    display: inline-block;
+    pointer-events: none;
+    user-select: none;
+}
+
+.modal-content {
+    background-color: #444444;
 }

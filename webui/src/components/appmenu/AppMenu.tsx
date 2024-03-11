@@ -18,7 +18,7 @@ const AppMenu = () => {
   };
 
   const handleSettingsClick = () => {
-    console.log("settings clicked");
+    // navigate
   };
 
   return (
@@ -48,11 +48,11 @@ const AppMenu = () => {
             Apps
           </MenuHeader>
           <MenuItem
-            id="settings"
-            displayText="Settings"
+            pagePath="shorturls"
+            id="menu-shorturls"
+            displayText="Short URLs"
             onClick={handleSettingsClick}
           />
-          <MenuItem displayText="Logout" onClick={handleSettingsClick} />
           <MenuFooter />
         </Menu>
       </div>

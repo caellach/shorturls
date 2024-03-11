@@ -25,7 +25,7 @@ const MenuHeader: FC<ProfileProps> = ({
 
   return (
     <div id={id} className={className} onClick={onClick} onKeyUp={onKeyUp}>
-      <div>{children}</div>
+      {children}
     </div>
   );
 };

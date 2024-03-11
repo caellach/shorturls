@@ -7,11 +7,6 @@ import { Navigate, useLocation } from "react-router-dom";
 
 const Main = () => {
   const auth = useSelector((state: StoreState) => state.auth);
-
-  if (auth.isLoggedIn) {
-    return <Navigate to="/shorturls" replace />;
-  }
-
   const dispatch = useDispatch();
   const location = useLocation();
 
@@ -19,18 +14,22 @@ const Main = () => {
     const handleAuth = async () => {
       const searchParams = new URLSearchParams(location.search);
       // clear the code from the url
-      window.history.replaceState({}, document.title, location.pathname);
-
       const access_token = searchParams.get("a"); // a for access_token
       if (access_token) {
         console.log("access_token", access_token);
         // dispatch the token to the store
+        console.log("auth", auth);
         dispatch(login({ authTokens: { access_token, refresh_token: null } }));
+        window.history.replaceState({}, document.title, location.pathname);
       }
     };
 
     handleAuth();
-  }, [dispatch, location]);
+  }, [auth, dispatch, location]);
+
+  if (auth.isLoggedIn) {
+    return <Navigate to="/shorturls" replace />;
+  }
 
   // we should never reach this point if the user is logged in
   return (

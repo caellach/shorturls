@@ -1,26 +1,48 @@
 import { FC, MouseEventHandler } from "react";
+import { useLocation } from "react-router-dom";
 
-type ProfileProps = {
+type MenuItemProps = {
+  active?: boolean;
+  disabled?: boolean;
   className?: string;
   displayText?: string;
   id?: string;
   onClick?: MouseEventHandler<HTMLAnchorElement>;
+  pagePath?: string;
 };
 
-const MenuItem: FC<ProfileProps> = ({
+const MenuItem: FC<MenuItemProps> = ({
+  active,
+  disabled,
   className,
   displayText,
   id,
   onClick,
+  pagePath,
 }) => {
+  const location = useLocation();
+  const isCurrentPage = (path: string): boolean => {
+    return location.pathname === `/${path}`;
+  };
+
+  active =
+    active !== undefined
+      ? active
+      : pagePath !== undefined
+        ? isCurrentPage(pagePath)
+        : false;
   className = className ?? "menu-item";
+  className = active ? `${className} active` : className;
+  className = disabled ? `${className} disabled` : className;
+
   displayText = displayText ?? "";
   id = id ? `bm-item-${id}` : "";
   onClick =
-    onClick ??
-    (() => {
-      console.log(`onClick not implemented for BMMenuItem ${displayText}`);
-    });
+    onClick && !active && !disabled
+      ? onClick
+      : () => {
+          console.log(`onClick disabled for BMMenuItem ${displayText}`);
+        };
 
   return (
     <a
@@ -30,7 +52,9 @@ const MenuItem: FC<ProfileProps> = ({
       onClick={onClick}
       type="button"
     >
+      {active ? ">>" : ""}
       {displayText}
+      {active ? "<<" : ""}
     </a>
   );
 };

@@ -2,6 +2,24 @@
     color: red;
 }
 
+button {
+    cursor: pointer;
+    user-select: none;
+}
+
+
+button.action-delete {
+    filter: grayscale(100%);
+}
+
+button.action-delete:hover {
+    filter: grayscale(0%);
+}
+
+button.action-delete:active {
+    filter: grayscale(50%);
+}
+
 button.auth {
     background-color: #f5f5f5;
     border: 1px solid #f5f5f5;
@@ -68,4 +86,88 @@ button.logout {
         background-color: #000;
         color: #f5f5f5;
     }
+}
+
+
+
+button.copy {
+    background-color: #333333;
+    color: whitesmoke;
+    border: none;
+    padding: 8px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+button.copy:active {
+    background-color: #777777;
+}
+
+button.create {
+    background-color: green;
+    color: whitesmoke;
+    border: darkgreen 1px solid;
+    padding: 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+button.create:hover {
+    background-color: #3333ff;
+}
+
+button.create:active {
+    background-color: #6666ff;
+}
+
+
+
+button.destroy {
+    background-color: #ff0000;
+    color: whitesmoke;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button.destroy:hover {
+    background-color: #ff3333;
+}
+
+button.destroy:active {
+    background-color: #ff6666;
+}   
+
+button.save {
+    background-color: #00ff00;
+    color: #333333;
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button.save:hover {
+    background-color: #33ff33;
+}
+
+button.save:active {
+    background-color: #66ff66;
+}
+
+
+button > img.icon {
+    width: 16px;
+    height: 16px;
+    margin: 0px;
+    padding: 0px;
+}
+
+button.btn-close {
+    filter: invert(1);
 }

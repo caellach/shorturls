@@ -236,7 +236,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.7":
+"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.7.2, @babel/runtime@npm:^7.8.7":
   version: 7.24.0
   resolution: "@babel/runtime@npm:7.24.0"
   dependencies:
@@ -1811,6 +1811,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/react-virtualized@npm:^9.21.29":
+  version: 9.21.29
+  resolution: "@types/react-virtualized@npm:9.21.29"
+  dependencies:
+    "@types/prop-types": "npm:*"
+    "@types/react": "npm:*"
+  checksum: 13cb3a55bbf662ebc76e0653274a51f62dbc6574a641a4ec6f0c258658e444eabff05680983b4b0a70bc2ac0a20fb88d4e5e0be949f3db4068b434a42e0f267e
+  languageName: node
+  linkType: hard
+
 "@types/react@npm:*, @types/react@npm:18.2.63":
   version: 18.2.63
   resolution: "@types/react@npm:18.2.63"
@@ -2923,6 +2933,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"clsx@npm:^1.0.4":
+  version: 1.2.1
+  resolution: "clsx@npm:1.2.1"
+  checksum: 34dead8bee24f5e96f6e7937d711978380647e936a22e76380290e35486afd8634966ce300fc4b74a32f3762c7d4c0303f442c3e259f4ce02374eb0c82834f27
+  languageName: node
+  linkType: hard
+
+"clsx@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "clsx@npm:2.1.0"
+  checksum: c09c00ad14f638366ca814097e6cab533dfa1972a358da5b557be487168acbb25b4c1395e89ffa842a8a61ba87a462d2b4885bc9d4f8410b598f3cb339599cdb
+  languageName: node
+  linkType: hard
+
 "cmd-shim@npm:^6.0.0":
   version: 6.0.2
   resolution: "cmd-shim@npm:6.0.2"
@@ -3822,7 +3846,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dom-helpers@npm:^5.0.1":
+"dom-helpers@npm:^5.0.1, dom-helpers@npm:^5.1.3":
   version: 5.2.1
   resolution: "dom-helpers@npm:5.2.1"
   dependencies:
@@ -4092,6 +4116,15 @@ __metadata:
     isarray: "npm:^2.0.5"
     stop-iteration-iterator: "npm:^1.0.0"
   checksum: ebd11effa79851ea75d7f079405f9d0dc185559fd65d986c6afea59a0ff2d46c2ed8675f19f03dce7429d7f6c14ff9aede8d121fbab78d75cfda6a263030bac0
+  languageName: node
+  linkType: hard
+
+"esbuild-plugin-react-virtualized@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "esbuild-plugin-react-virtualized@npm:1.0.4"
+  peerDependencies:
+    esbuild: "*"
+  checksum: 0abdbfc9ddb93f50ee887c24e67697af074c368a6c6c4d8ad6508ea5486379cfe5d1c8cada3ed8e7dad932c84bc5fc09c398adde75ec25cdd76df6d1b2f866d7
   languageName: node
   linkType: hard
 
@@ -8616,6 +8649,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-lifecycles-compat@npm:^3.0.4":
+  version: 3.0.4
+  resolution: "react-lifecycles-compat@npm:3.0.4"
+  checksum: 1d0df3c85af79df720524780f00c064d53a9dd1899d785eddb7264b378026979acbddb58a4b7e06e7d0d12aa1494fd5754562ee55d32907b15601068dae82c27
+  languageName: node
+  linkType: hard
+
 "react-popper@npm:^2.2.4":
   version: 2.3.0
   resolution: "react-popper@npm:2.3.0"
@@ -8683,6 +8723,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-toastify@npm:^10.0.4":
+  version: 10.0.4
+  resolution: "react-toastify@npm:10.0.4"
+  dependencies:
+    clsx: "npm:^2.1.0"
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: 3d31edf81e8b394fd0085615fd7ba9fb9546c7cdae56e5334df67b58d65450c73af14a8fc163f19ceed03cfee7a344d1af1489422536f52c9516ca45e9b61a37
+  languageName: node
+  linkType: hard
+
 "react-transition-group@npm:^4.4.2":
   version: 4.4.5
   resolution: "react-transition-group@npm:4.4.5"
@@ -8695,6 +8747,23 @@ __metadata:
     react: ">=16.6.0"
     react-dom: ">=16.6.0"
   checksum: 2ba754ba748faefa15f87c96dfa700d5525054a0141de8c75763aae6734af0740e77e11261a1e8f4ffc08fd9ab78510122e05c21c2d79066c38bb6861a886c82
+  languageName: node
+  linkType: hard
+
+"react-virtualized@npm:^9.22.5":
+  version: 9.22.5
+  resolution: "react-virtualized@npm:9.22.5"
+  dependencies:
+    "@babel/runtime": "npm:^7.7.2"
+    clsx: "npm:^1.0.4"
+    dom-helpers: "npm:^5.1.3"
+    loose-envify: "npm:^1.4.0"
+    prop-types: "npm:^15.7.2"
+    react-lifecycles-compat: "npm:^3.0.4"
+  peerDependencies:
+    react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
+    react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
+  checksum: b0444b472f317dce61119c07426c5e9ebfe5125d049996678da922717715a1aa83df755aa36877f4b1718aa2e181d22f15ebb807ee356418c56f922f865628c1
   languageName: node
   linkType: hard
 
@@ -9365,6 +9434,7 @@ __metadata:
     "@types/react": "npm:18.2.63"
     "@types/react-burger-menu": "npm:^2.8.7"
     "@types/react-dom": "npm:18.2.19"
+    "@types/react-virtualized": "npm:^9.21.29"
     "@typescript-eslint/eslint-plugin": "npm:7.1.1"
     "@typescript-eslint/parser": "npm:7.1.1"
     "@vitejs/plugin-react": "npm:4.2.1"
@@ -9376,6 +9446,7 @@ __metadata:
     c8: "npm:9.1.0"
     core-js: "npm:3.36.0"
     cssnano: "npm:6.0.5"
+    esbuild-plugin-react-virtualized: "npm:^1.0.4"
     eslint: "npm:8.57.0"
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-prettier: "npm:5.1.3"
@@ -9393,6 +9464,8 @@ __metadata:
     react-dom: "npm:18.2.0"
     react-redux: "npm:^9.1.0"
     react-router-dom: "npm:6.22.2"
+    react-toastify: "npm:^10.0.4"
+    react-virtualized: "npm:^9.22.5"
     reactstrap: "npm:^9.2.2"
     redux: "npm:^5.0.1"
     redux-persist: "https://github.com/rt2zz/redux-persist"

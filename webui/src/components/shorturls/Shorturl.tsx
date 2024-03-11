@@ -7,16 +7,13 @@ type ShorturlProps = {
 };
 
 const ShorturlComponent: FC<ShorturlProps> = ({
-  data = { id: "", shortUrl: "", url: "", uses: 0, lastUsed: new Date() },
+  data = { id: "", shortUrl: "", url: "", useCount: 0, lastUsed: new Date() },
   header = false,
 }) => {
   const [deleted, setDeleted] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
-  let className = "shorturls-list-item";
-  if (header) {
-    className += " header";
-  }
+  const baseClassName = "shorturls-list-";
 
   const handleCopyShortUrl = () => {
     navigator.clipboard.writeText(data.shortUrl);
@@ -37,15 +34,18 @@ const ShorturlComponent: FC<ShorturlProps> = ({
   };
 
   return header ? (
-    <div className={className}>
-      <div>ID</div>
-      <div>URL</div>
-      <div>Uses</div>
-      <div>Last Used</div>
-      <div>Actions</div>
-    </div>
+    <th className={`${baseClassName}header`}>
+      <td>ID</td>
+      <td>URL</td>
+      <td>Uses</td>
+      <td>Last Used</td>
+      <td>Actions</td>
+    </th>
   ) : (
-    <div key={data.id} className={className + (deleted ? " deleted" : "")}>
+    <tr
+      key={data.id}
+      className={`${baseClassName}row + (deleted ? " deleted" : "")`}
+    >
       <div>
         <button type="button" className="copy" onClick={handleCopyShortUrl}>
           {data.id}
@@ -56,7 +56,7 @@ const ShorturlComponent: FC<ShorturlProps> = ({
           {data.url}
         </button>
       </div>
-      <div>{data.uses}</div>
+      <div>{data.useCount}</div>
       <div>
         {`${data.lastUsed.toLocaleDateString()} ${data.lastUsed.toLocaleTimeString()}`}
       </div>
@@ -83,7 +83,7 @@ const ShorturlComponent: FC<ShorturlProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </tr>
   );
 };
 
