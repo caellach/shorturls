@@ -7,7 +7,6 @@ import {
 import { ShorturlData, UserMetadata } from "@/types/ShorturlData";
 import { FC, SetStateAction, useEffect, useState } from "react";
 import { AutoSizer, Column, Table, TableCellRenderer } from "react-virtualized";
-import { isDate } from "util/types";
 
 type DeletedRowsState = { [key: string]: boolean };
 type ShowDeleteConfirmationRowsState = { [key: string]: boolean };
