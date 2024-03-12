@@ -13,7 +13,7 @@ if [ -d "$repo_path" ]; then
     cd ..
 else
     # If it doesn't exist, clone the repository
-    git clone git@github.com:$git_repo_user/$repo_path.git
+    git clone https://github.com/$git_repo_user/$repo_path.git
 fi
 
 # Check if configuration files exist
