@@ -23,8 +23,8 @@ if [ ! -f config.json ] || [ ! -f wordlist.json ]; then
 fi
 
 # Copy configuration files
-cp config.json api-server/go/config.json
-cp wordlist.json api-server/go/wordlist.json
+cp config.json $repo_path/api-server/go/config.json
+cp wordlist.json $repo_path/api-server/go/wordlist.json
 
 # Build the server application
 cd $repo_path/api-server/go

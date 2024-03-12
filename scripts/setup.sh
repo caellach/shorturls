@@ -90,6 +90,7 @@ sudo systemctl reload nginx
 # Add a cron job to renew the SSL certificate automatically
 echo "0 12 * * * root certbot renew --quiet --deploy-hook 'systemctl reload nginx'" | sudo tee -a /etc/crontab > /dev/null
 
+
 # Check if Git is installed, if not, install it
 if ! command -v git &> /dev/null
 then
@@ -103,11 +104,29 @@ then
     sudo apt-get install -y nodejs
 fi
 
-# Check if Yarn is installed, if not, install it
-if ! command -v yarn &> /dev/null
-then
-    sudo npm install -g yarn
-fi
+# Link yarn
+corepack enable
+
 
 # Run the deployment script
 bash deploy.sh
+
+
+# Finally, secure the server
+# Change the SSH port to 2222
+sudo sed -i 's/#Port 22/Port 2222/g' /etc/ssh/sshd_config
+sudo systemctl restart sshd
+
+# Check if UFW is installed, if not, install it
+if ! command -v ufw &> /dev/null
+then
+    sudo apt-get install -y ufw
+fi
+
+# Allow only TCP ports 80, 443, and 2222
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw allow 2222/tcp
+
+# Enable the firewall
+sudo ufw enable
