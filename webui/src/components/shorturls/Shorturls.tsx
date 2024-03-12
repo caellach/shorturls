@@ -1,8 +1,13 @@
-import { getUrls } from "@/api/url";
-import { ShorturlData } from "@/types/ShorturlData";
-import { FC, useEffect, useState } from "react";
-//import ShorturlComponent from "./Shorturl";
+import {
+  deleteUrl,
+  getAuthenticatedWebsocket,
+  getUrls,
+  getUserMetadata,
+} from "@/api/url";
+import { ShorturlData, UserMetadata } from "@/types/ShorturlData";
+import { FC, SetStateAction, useEffect, useState } from "react";
 import { AutoSizer, Column, Table, TableCellRenderer } from "react-virtualized";
+import { isDate } from "util/types";
 
 type DeletedRowsState = { [key: string]: boolean };
 type ShowDeleteConfirmationRowsState = { [key: string]: boolean };
@@ -10,20 +15,97 @@ type ShowDeleteConfirmationRowsState = { [key: string]: boolean };
 type ShorturlsProps = {
   //data: ShorturlData[];
   shortUrls: ShorturlData[];
-  setShortUrls: (shortUrls: ShorturlData[]) => void;
+  setShortUrls: (value: SetStateAction<ShorturlData[]>) => void;
 };
 
 const ShorturlsComponent: FC<ShorturlsProps> = ({
   shortUrls,
   setShortUrls,
 }) => {
+  const [userMetadata, setUserMetadata] = useState<UserMetadata>();
   useEffect(() => {
+    const fetchMetadata = async () => {
+      const metadata = await getUserMetadata();
+      setUserMetadata(metadata);
+    };
+
     const fetchUrls = async () => {
       const data = await getUrls();
       setShortUrls(data);
     };
+    fetchMetadata();
     fetchUrls();
   }, [setShortUrls]);
+
+  let ws: WebSocket = null as any;
+  useEffect(() => {
+    // live updates
+    const setupWebsocket = () => {
+      ws = getAuthenticatedWebsocket();
+      let authenticated = false;
+      ws.onmessage = (event) => {
+        try {
+          console.log("Websocket message:", event.data);
+          const data = JSON.parse(event.data);
+          if (data.action === "auth") {
+            authenticated = true;
+          } else if (data.action === "created") {
+            const shorturlData = data.data as ShorturlData;
+            setShortUrls((prevState) => {
+              // remove the same shorturl if it exists
+              const newState = prevState.filter(
+                (shorturl) => shorturl.id !== shorturlData.id,
+              );
+              return [shorturlData, ...newState];
+            });
+          } else if (data.action === "deleted") {
+            const shorturlData = data.data as ShorturlData;
+            setShortUrls((prevState) =>
+              prevState.filter((shorturl) => shorturl.id !== shorturlData.id),
+            );
+          } else if (data.action === "updated") {
+            const shorturlData = data.data as ShorturlData;
+            setShortUrls((prevState) =>
+              prevState.map((shorturl) =>
+                shorturl.id === shorturlData.id ? shorturlData : shorturl,
+              ),
+            );
+          }
+        } catch (e) {
+          console.error("Failed to parse websocket message", e);
+        }
+      };
+
+      ws.onclose = (event) => {
+        authenticated = false;
+        console.log(
+          "WebSocket closed with code",
+          event.code,
+          "and reason",
+          event,
+          "\nReconnecting in 5 seconds...",
+        );
+        setTimeout(setupWebsocket, 5 * 1000);
+      };
+
+      // heartbeat ping
+      setInterval(() => {
+        if (authenticated) {
+          ws.send(
+            JSON.stringify({
+              action: "ping",
+            }),
+          );
+        }
+      }, 60 * 1000);
+    };
+
+    setupWebsocket();
+    return () => {
+      ws.close();
+    };
+    // websocket
+  }, [setShortUrls, ws]);
 
   const [deletedRows, setDeletedRows] = useState<DeletedRowsState>({});
   const [showDeleteConfirmationRows, setShowDeleteConfirmationRows] =
@@ -54,7 +136,7 @@ const ShorturlsComponent: FC<ShorturlsProps> = ({
   };
 
   const handleCopyShortUrl = (data: ShorturlData) => {
-    navigator.clipboard.writeText(data.shortUrl);
+    navigator.clipboard.writeText(data.short_url);
   };
 
   const handleCopyUrl = (data: ShorturlData) => {
@@ -70,7 +152,7 @@ const ShorturlsComponent: FC<ShorturlsProps> = ({
     toggleShowDeleteConfirmation(data.id);
   };
 
-  const handleConfirmDelete = (
+  const handleConfirmDelete = async (
     shouldDelete: boolean,
     rowData: ShorturlData,
   ) => {
@@ -79,7 +161,16 @@ const ShorturlsComponent: FC<ShorturlsProps> = ({
     }
 
     if (shouldDelete) {
-      markRowAsDeleted(rowData.id);
+      const didDelete = await deleteUrl(rowData.id);
+      if (didDelete) {
+        markRowAsDeleted(rowData.id);
+        setShortUrls((prevState) =>
+          prevState.filter((url) => url.id !== rowData.id),
+        );
+
+        const metadata = await getUserMetadata();
+        setUserMetadata(metadata);
+      }
     } else {
       toggleShowDeleteConfirmation(rowData?.id);
     }
@@ -97,7 +188,7 @@ const ShorturlsComponent: FC<ShorturlsProps> = ({
           ❌
         </button>
         <div hidden={!showDeleteConfirmationRows[rowData.id]}>
-          <p className="no-interaction">⚠Delete? &nbsp;</p>
+          <p className="no-interaction mobile-hide">⚠Delete? &nbsp;</p>
           <button
             type="button"
             className="destroy"
@@ -131,9 +222,13 @@ const ShorturlsComponent: FC<ShorturlsProps> = ({
   };
 
   const lastUsedCellRenderer: TableCellRenderer = ({ cellData }) => {
-    return cellData
-      ? `${cellData.toLocaleDateString()} ${cellData.toLocaleTimeString()}`
-      : "-";
+    if (cellData) {
+      const date = new Date(cellData);
+      // remove seconds from the time string
+      const time = date.toLocaleTimeString().split(":").slice(0, 2).join(":");
+      return `${date.toLocaleDateString()} ${time}`;
+    }
+    return "-";
   };
 
   const urlCellRenderer: TableCellRenderer = ({ cellData, rowData }) => {
@@ -180,11 +275,11 @@ const ShorturlsComponent: FC<ShorturlsProps> = ({
               label="Uses"
               dataKey="uses"
               width={width * 0.05}
-              cellDataGetter={({ rowData }) => rowData.useCount ?? 0}
+              cellDataGetter={({ rowData }) => rowData.use_count ?? 0}
             />
             <Column
               label="Last Used"
-              dataKey="lastUsed"
+              dataKey="last_used"
               width={width * 0.15}
               cellRenderer={lastUsedCellRenderer}
             />

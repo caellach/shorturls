@@ -67,7 +67,7 @@ func main() {
 	}
 
 	var mongoClient = mongo.GetMongoClient(mongoDBConfig)
-	LoadRoutes(_config, app, mongoClient)
+	LoadRoutes(app, mongoClient)
 
 	log.Fatal(app.Listen(":3000"))
 }

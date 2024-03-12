@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/caellach/shorturl/api-server/go/pkg/env"
+	"github.com/caellach/shorturl/api-server/go/pkg/utils"
 )
 
 func DefaultConfigParams() *ConfigParams {
@@ -21,7 +22,13 @@ func DefaultConfigParams() *ConfigParams {
 	}
 }
 
+var ServerConfig *Config = nil
+
 func LoadConfig(configParams *ConfigParams) *Config {
+	if ServerConfig != nil {
+		return ServerConfig
+	}
+
 	// Set the default configuration
 	config := Config{
 		App: AppConfig{
@@ -42,6 +49,9 @@ func LoadConfig(configParams *ConfigParams) *Config {
 			Database: "shorturls",
 			Username: "admin",
 			Password: "admin123",
+		},
+		Token: TokenConfig{
+			Secret: utils.GenerateRandomString(32),
 		},
 	}
 
@@ -128,6 +138,8 @@ func LoadConfig(configParams *ConfigParams) *Config {
 
 	// Set server env vars
 	env.Config.Debug = config.App.Debug
+
+	ServerConfig = &config
 
 	return &config
 }

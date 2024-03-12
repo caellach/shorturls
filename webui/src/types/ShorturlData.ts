@@ -1,7 +1,14 @@
 export type ShorturlData = {
   id: string;
-  shortUrl: string;
+  short_url: string;
   url: string;
-  useCount: number;
-  lastUsed: Date;
+  use_count: number;
+  last_used: Date;
+};
+
+export type UserMetadata = {
+  user_id: string;
+  active_count: number;
+  created_count: number;
+  last_created: Date;
 };

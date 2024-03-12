@@ -129,7 +129,9 @@ func authProviderCallback(c *fiber.Ctx) error {
 	})
 
 	// sign the token
-	tokenString, err := token.SignedString([]byte("secret"))
+	// This should be considered temporary. I would normally setup JWKS, use that to sign the token, and setup the .well-known endpoint.
+	// This would be a high risk flaw in a production system.
+	tokenString, err := token.SignedString(signingSecret)
 	if err != nil {
 		return utils.GenerateJsonErrorMessage(c, fiber.StatusInternalServerError, "failed to sign token", err)
 	}

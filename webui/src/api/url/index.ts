@@ -1,13 +1,14 @@
-import { ShorturlData } from "@/types/ShorturlData";
+import { ShorturlData, UserMetadata } from "@/types/ShorturlData";
 import axios from "axios";
-
-// Purpose: Contains the functions for authenticating the user.
-
-axios.defaults.baseURL = "http://localhost:3000";
 
 export const getUrls = async (): Promise<ShorturlData[]> => {
   const response = await axios.get("/u/");
   return response.data as ShorturlData[];
+};
+
+export const getUserMetadata = async (): Promise<UserMetadata> => {
+  const response = await axios.get("/u/metadata");
+  return response.data;
 };
 
 export const deleteUrl = async (id: string): Promise<boolean> => {
@@ -20,6 +21,36 @@ export const deleteUrl = async (id: string): Promise<boolean> => {
 };
 
 export const createUrl = async (url: string): Promise<ShorturlData> => {
-  const response = await axios.post("/u/", { url });
+  const response = await axios.put("/u/", { url });
   return response.data as ShorturlData;
+};
+
+export const getAuthenticatedWebsocket = (): WebSocket => {
+  const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+  const wsBaseUrl = axios.defaults.baseURL?.split("://")[1] ?? "localhost:3000";
+  const ws = new WebSocket(`${wsProtocol}://${wsBaseUrl}/u/ws`);
+  // get the token set on the axios instance
+  const authorization = axios.defaults.headers.common.Authorization;
+  if (!authorization) {
+    throw new Error("No token set on axios instance");
+  }
+  if (typeof authorization !== "string") {
+    throw new Error("Token is not a string");
+  }
+  const token = authorization.split(" ")[1];
+  if (!token) {
+    throw new Error("No token found in Authorization header");
+  }
+
+  ws.onopen = () => {
+    console.log("Websocket connected, authenticating...");
+    ws.send(
+      JSON.stringify({
+        action: "auth",
+        token,
+      }),
+    );
+  };
+
+  return ws;
 };

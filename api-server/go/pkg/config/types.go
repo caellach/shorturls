@@ -17,12 +17,17 @@ type MongoDBConfig struct {
 	Password string `json:"password"`
 }
 
+type TokenConfig struct {
+	Secret string `json:"secret"`
+}
+
 // Config is the configuration for the application
 type Config struct {
 	App       AppConfig       `json:"app"`
 	WordList  WordListConfig  `json:"wordlist"`
 	MongoDB   MongoDBConfig   `json:"mongodb"`
 	Providers ProvidersConfig `json:"providers"`
+	Token     TokenConfig     `json:"token"`
 }
 
 type ConfigParams struct {

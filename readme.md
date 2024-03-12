@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a simple ShortURL system that I made so that I can implement the backend in various languages.
+This is a simple ShortURL app that I made so that I can implement the backend in various languages.
 
 ## Purpose
 
@@ -17,7 +17,7 @@ To this end, I'm making:
 ## Technologies
 
 APIs: Go
-Database: Mongo
+DB: Mongo
 UI: HTML, CSS, TypeScript, React
 
 ## License
@@ -26,4 +26,4 @@ CC BY-NC-SA 4.0
 
 ## Other
 
-This project does not use any copyrighted code, images, or other materials from any company or other individual.
+Except for external packages, the code and resources in this project are from me alone.

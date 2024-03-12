@@ -8,6 +8,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/caellach/shorturl/api-server/go/pkg/config"
 	"github.com/caellach/shorturl/api-server/go/pkg/utils"
 )
 
@@ -23,7 +24,7 @@ func AuthRequired() fiber.Handler {
 			return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "failed to get token from request", errors.New("token is empty"))
 		}
 
-		parsedToken, err := validateToken(token[1])
+		parsedToken, err := ValidateToken(token[1])
 		if err != nil {
 			return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "failed to validate token", err)
 		}
@@ -50,7 +51,7 @@ func AuthRequired() fiber.Handler {
 	}
 }
 
-func validateToken(token string) (*jwt.Token, error) {
+func ValidateToken(token string) (*jwt.Token, error) {
 	// This is just a placeholder, replace it with your actual token validation logic
 	mySigningKeyFunc := func(token *jwt.Token) (interface{}, error) {
 		// Check if the token is valid
@@ -58,7 +59,9 @@ func validateToken(token string) (*jwt.Token, error) {
 		if !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte("secret"), nil
+
+		// Return the key used to sign the token
+		return []byte(config.ServerConfig.Token.Secret), nil
 	}
 
 	// Parse the token

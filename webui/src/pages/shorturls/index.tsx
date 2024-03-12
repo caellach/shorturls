@@ -1,9 +1,8 @@
 import ShorturlsComponent from "@/components/shorturls/Shorturls";
 import { toast } from "react-toastify";
-import { ChangeEvent, FormEventHandler, useState } from "react";
+import { FormEventHandler, useCallback, useState } from "react";
 import {
   Button,
-  ButtonProps,
   Form,
   FormFeedback,
   FormGroup,
@@ -13,6 +12,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+import { createUrl } from "@/api/url";
 import { ShorturlData } from "@/types/ShorturlData";
 
 const Shorturls = () => {
@@ -21,6 +21,9 @@ const Shorturls = () => {
   const [urlError, setUrlError] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [shortUrls, setShortUrls] = useState<ShorturlData[]>([]);
+
+  const stableSetShortUrls = useCallback(setShortUrls, []);
+  console.log("shorturls init");
 
   const toggleModalCreateNewShortUrl = () => {
     setModal(!modal);
@@ -44,31 +47,31 @@ const Shorturls = () => {
     // Handle the creation of the new short URL here
     setIsCreating(true);
 
-    // use a promise to delay the response
-    const promise = new Promise<void>((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 1000);
+    const createdShorturl = await createUrl(url);
+    console.log("Created short URL:", createdShorturl);
+    stableSetShortUrls((prevState) => {
+      // remove the same shorturl if it exists
+      const newState = prevState.filter(
+        (shorturl) => shorturl.id !== createdShorturl.id,
+      );
+      return [createdShorturl, ...newState];
     });
-    await Promise.all([promise]);
-
-    setShortUrls([
-      ...shortUrls,
-      {
-        id: "123",
-        url,
-        shortUrl: "http://localhost:3000/123",
-        useCount: 0,
-        lastUsed: new Date(0),
-      },
-    ]);
 
     setIsCreating(false);
     setModal(false);
-    toast.success("Short URL created successfully");
+    toast.success("Short URL created successfully", {
+      position: "bottom-right",
+    });
   };
 
-  const handleFormSubmit = (e: ButtonProps) => {};
+  const onFormSubmit: FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+    handleCreateNewShortUrl();
+  };
+
+  const onCreateClick = () => {
+    handleCreateNewShortUrl();
+  };
 
   return (
     <>
@@ -85,7 +88,10 @@ const Shorturls = () => {
             </button>
           </div>
         </div>
-        <ShorturlsComponent shortUrls={shortUrls} setShortUrls={setShortUrls} />
+        <ShorturlsComponent
+          shortUrls={shortUrls}
+          setShortUrls={stableSetShortUrls}
+        />
         <Modal
           centered
           isOpen={modal}
@@ -96,12 +102,7 @@ const Shorturls = () => {
             <b>Create New Short URL</b>
           </ModalHeader>
           <ModalBody>
-            <Form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleCreateNewShortUrl();
-              }}
-            >
+            <Form onSubmit={onFormSubmit}>
               <FormGroup>
                 <Input
                   type="url"
@@ -118,7 +119,12 @@ const Shorturls = () => {
             </Form>
           </ModalBody>
           <ModalFooter>
-            <Button className="create" type="submit" disabled={isCreating}>
+            <Button
+              className="create"
+              type="button"
+              disabled={isCreating}
+              onClick={onCreateClick}
+            >
               Create
             </Button>
             <Button

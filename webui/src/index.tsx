@@ -19,13 +19,11 @@ const root = createRoot(container!);
 const app = (
   <BrowserRouter>
     <ToastContainer />
-    <StrictMode>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <App />
-        </PersistGate>
-      </Provider>
-    </StrictMode>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <App />
+      </PersistGate>
+    </Provider>
   </BrowserRouter>
 );
 root.render(app);

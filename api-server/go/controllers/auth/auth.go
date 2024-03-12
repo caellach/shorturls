@@ -15,6 +15,8 @@ var validAuthProviders = make(map[string]string)
 var authStatesCollection *mongo.Collection
 var usersCollection *mongo.Collection
 
+var signingSecret []byte
+
 func initProviders() {
 	validAuthProviders["discord"] = "https://discord.com/oauth2/authorize?client_id=" + discordConfig.ClientID + "&response_type=code&scope=email+identify"
 
@@ -22,15 +24,17 @@ func initProviders() {
 	//validAuthProviders["facebook"] = "https://www.facebook.com/v12.0/dialog/oauth"
 }
 
-func CreateAuthRoutes(DiscordConfig *config.DiscordConfig, App *fiber.App, MongoClient *mongo.Client) {
+func CreateAuthRoutes(App *fiber.App, MongoClient *mongo.Client) {
 	app = App
-	discordConfig = DiscordConfig
+	discordConfig = &config.ServerConfig.Providers.DiscordConfig
 	mongoClient = MongoClient
 
 	authStatesCollection = mongoClient.Database("shared").Collection("auth_states")
 	usersCollection = mongoClient.Database("shared").Collection("users")
 
 	initProviders()
+
+	signingSecret = []byte(config.ServerConfig.Token.Secret)
 
 	// Load the routes for the application
 	app.Get("/api/auth/callback", authProviderCallback)
