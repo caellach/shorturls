@@ -5,9 +5,6 @@ set -euo pipefail
 # Define required environment variables
 git_repo_user="${GIT_REPO_USER:?Environment variable GIT_REPO_USER is not set}"
 domain_name="${DOMAIN_NAME:?Environment variable DOMAIN_NAME is not set}"
-dns_namecheap_api_key="${DNS_NAMECHEAP_API_KEY:?Environment variable DNS_NAMECHEAP_API_KEY is not set}"
-dns_namecheap_secret_key="${DNS_NAMECHEAP_SECRET_KEY:?Environment variable DNS_NAMECHEAP_SECRET_KEY is not set}"
-dns_namecheap_email="${DNS_NAMECHEAP_EMAIL:?Environment variable DNS_NAMECHEAP_EMAIL is not set}"
 
 # Update package lists for upgrades and new package installations
 sudo apt-get update
@@ -95,13 +92,8 @@ then
     sudo -E pip install certbot-dns-namecheap
 fi
 
-# Create a configuration file for Namecheap
-echo "dns_namecheap_api_key = $dns_namecheap_api_key
-dns_namecheap_secret_key = $dns_namecheap_secret_key
-dns_namecheap_email = $dns_namecheap_email" > namecheap.ini
-
 # Run Certbot with the Namecheap plugin to obtain an SSL certificate
-sudo certbot --dns-namecheap --dns-namecheap-credentials namecheap.ini --nginx -d $domain_name
+sudo certbot --manual --preferred-challenges dns --nginx -d $domain_name
 
 # Restart Nginx to apply the SSL certificate
 sudo systemctl restart nginx
