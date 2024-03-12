@@ -38,17 +38,6 @@ then
     sudo apt-get install -y certbot python3-certbot-nginx
 fi
 
-# Check if pip is installed, if not, install it
-if ! command -v pip &> /dev/null
-then
-    sudo apt-get install -y python3-pip
-fi
-
-# Check if certbot-dns-namecheap is installed, if not, install it
-if ! pip show certbot-dns-namecheap &> /dev/null
-then
-    sudo -E pip install certbot-dns-namecheap
-fi
 
 # Run Certbot with the Namecheap plugin to obtain an SSL certificate
 sudo certbot --manual --preferred-challenges dns --nginx -d $domain_name
