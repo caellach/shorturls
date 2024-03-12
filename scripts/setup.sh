@@ -31,6 +31,29 @@ then
     sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 fi
 
+
+# Check if Certbot is installed, if not, install it
+if ! command -v certbot &> /dev/null
+then
+    sudo apt-get install -y certbot python3-certbot-nginx
+fi
+
+# Check if pip is installed, if not, install it
+if ! command -v pip &> /dev/null
+then
+    sudo apt-get install -y python3-pip
+fi
+
+# Check if certbot-dns-namecheap is installed, if not, install it
+if ! pip show certbot-dns-namecheap &> /dev/null
+then
+    sudo -E pip install certbot-dns-namecheap
+fi
+
+# Run Certbot with the Namecheap plugin to obtain an SSL certificate
+sudo certbot --manual --preferred-challenges dns --nginx -d $domain_name
+
+
 # Check if Nginx is installed, if not, install it
 if ! command -v nginx &> /dev/null
 then
@@ -74,29 +97,6 @@ sudo nginx -t
 # Reload Nginx to apply the changes
 sudo systemctl reload nginx
 
-# Check if Certbot is installed, if not, install it
-if ! command -v certbot &> /dev/null
-then
-    sudo apt-get install -y certbot python3-certbot-nginx
-fi
-
-# Check if pip is installed, if not, install it
-if ! command -v pip &> /dev/null
-then
-    sudo apt-get install -y python3-pip
-fi
-
-# Check if certbot-dns-namecheap is installed, if not, install it
-if ! pip show certbot-dns-namecheap &> /dev/null
-then
-    sudo -E pip install certbot-dns-namecheap
-fi
-
-# Run Certbot with the Namecheap plugin to obtain an SSL certificate
-sudo certbot --manual --preferred-challenges dns --nginx -d $domain_name
-
-# Restart Nginx to apply the SSL certificate
-sudo systemctl restart nginx
 
 # Add a cron job to renew the SSL certificate automatically
 echo "0 12 * * * root certbot renew --quiet --deploy-hook 'systemctl reload nginx'" | sudo tee -a /etc/crontab > /dev/null
