@@ -18,16 +18,22 @@ func main() {
 	// load config
 	_config := config.LoadConfig(config.DefaultConfigParams())
 
-	app := fiber.New(
-		fiber.Config{
-			Prefork:           _config.App.Prefork,
-			JSONDecoder:       sonic.Unmarshal,
-			JSONEncoder:       sonic.Marshal,
-			AppName:           _config.App.Name,
-			Concurrency:       _config.App.Concurrency,
-			EnablePrintRoutes: _config.App.EnablePrintRoutes,
-		},
-	)
+	fiberConfig := fiber.Config{
+		Prefork:           _config.App.Prefork,
+		JSONDecoder:       sonic.Unmarshal,
+		JSONEncoder:       sonic.Marshal,
+		AppName:           _config.App.Name,
+		Concurrency:       _config.App.Concurrency,
+		EnablePrintRoutes: _config.App.EnablePrintRoutes,
+	}
+
+	if len(_config.App.TrustedProxies) > 0 {
+		fiberConfig.ProxyHeader = "X-Forwarded-For"
+		fiberConfig.TrustedProxies = _config.App.TrustedProxies
+		fiberConfig.EnableTrustedProxyCheck = true
+	}
+
+	app := fiber.New(fiberConfig)
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",

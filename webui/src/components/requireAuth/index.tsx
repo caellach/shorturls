@@ -24,7 +24,9 @@ function requireAuth(WrappedComponent: ComponentType, requireAuth = true) {
 
     const isAuthorized = auth.isLoggedIn;
     if (isAuthorized) {
-      axios.defaults.baseURL = "http://localhost:3000";
+      if (window.location.hostname === "localhost") {
+        axios.defaults.baseURL = "http://localhost:3000";
+      }
       axios.defaults.headers.common.Authorization = `Bearer ${auth.accessToken}`;
     }
     if (requireAuth && !isAuthorized) {

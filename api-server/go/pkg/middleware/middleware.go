@@ -52,13 +52,14 @@ func AuthRequired() fiber.Handler {
 }
 
 func ValidateToken(token string) (*jwt.Token, error) {
-	// This is just a placeholder, replace it with your actual token validation logic
 	mySigningKeyFunc := func(token *jwt.Token) (interface{}, error) {
 		// Check if the token is valid
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
+
+		// Need more checks
 
 		// Return the key used to sign the token
 		return []byte(config.ServerConfig.Token.Secret), nil

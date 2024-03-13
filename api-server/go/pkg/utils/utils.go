@@ -104,3 +104,23 @@ func GenerateJsonErrorMessage(c *fiber.Ctx, statusCode int, message string, err 
 	LogError(c.Context().Logger(), response)
 	return c.Status(statusCode).JSON(response)
 }
+
+func getDefaultPort(protocol string) string {
+	if protocol == "https" {
+		return "443"
+	}
+	return "80"
+}
+
+func GetRedirectUri(c *fiber.Ctx) string {
+	port := c.Get("X-Forwarded-Port")
+	protocol := c.Protocol()
+
+	if port != "" && port != getDefaultPort(protocol) {
+		port = ":" + port
+	} else {
+		port = ""
+	}
+
+	return protocol + "://" + c.Hostname() + port + "/api/auth/callback"
+}

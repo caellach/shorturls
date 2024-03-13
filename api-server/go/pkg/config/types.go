@@ -1,12 +1,13 @@
 package config
 
 type AppConfig struct {
-	Name              string `json:"app_name"`
-	Port              int    `json:"port"`
-	Prefork           bool   `json:"prefork"`
-	Concurrency       int    `json:"concurrency"`
-	EnablePrintRoutes bool   `json:"enable_print_routes"`
-	Debug             bool   `json:"debug"`
+	Name              string   `json:"app_name"`
+	Port              int      `json:"port"`
+	Prefork           bool     `json:"prefork"`
+	Concurrency       int      `json:"concurrency"`
+	EnablePrintRoutes bool     `json:"enable_print_routes"`
+	Debug             bool     `json:"debug"`
+	TrustedProxies    []string `json:"trusted_proxies"`
 }
 
 type MongoDBConfig struct {

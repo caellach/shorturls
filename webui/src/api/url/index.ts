@@ -27,7 +27,10 @@ export const createUrl = async (url: string): Promise<ShorturlData> => {
 
 export const getAuthenticatedWebsocket = (): WebSocket => {
   const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
-  const wsBaseUrl = axios.defaults.baseURL?.split("://")[1] ?? "localhost:3000";
+  const wsBaseUrl =
+    window.location.hostname === "localhost"
+      ? axios.defaults.baseURL?.split("://")[1] ?? "localhost:3000"
+      : window.location.host;
   const ws = new WebSocket(`${wsProtocol}://${wsBaseUrl}/u/ws`);
   // get the token set on the axios instance
   const authorization = axios.defaults.headers.common.Authorization;

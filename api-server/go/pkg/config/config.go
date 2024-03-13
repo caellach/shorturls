@@ -38,6 +38,7 @@ func LoadConfig(configParams *ConfigParams) *Config {
 			Concurrency:       256 * 1024,
 			EnablePrintRoutes: true,
 			Debug:             false,
+			TrustedProxies:    []string{},
 		},
 		WordList: WordListConfig{
 			FilePath: "./wordlist.json",
@@ -104,6 +105,9 @@ func LoadConfig(configParams *ConfigParams) *Config {
 	if os.Getenv("APP_DEBUG") != "" {
 		var debug = os.Getenv("APP_DEBUG")
 		config.App.Debug = strings.ToLower(debug) == "true"
+	}
+	if os.Getenv("APP_TRUSTED_PROXIES") != "" {
+		config.App.TrustedProxies = strings.Split(os.Getenv("APP_TRUSTED_PROXIES"), ",")
 	}
 
 	// Wordlist environment variables

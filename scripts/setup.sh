@@ -39,8 +39,8 @@ then
 fi
 
 
-# Run Certbot with the Namecheap plugin to obtain an SSL certificate
-sudo certbot --manual --preferred-challenges dns --nginx -d $domain_name
+# Run Certbot to obtain an SSL certificate
+sudo certbot certonly --manual --preferred-challenges dns -d $domain_name
 
 
 # Check if Nginx is installed, if not, install it
@@ -66,11 +66,15 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/$domain_name/privkey.pem;
 
     location /u/ {
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Port $server_port;
+
         proxy_pass http://localhost:8080;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
     }
 
     location / {

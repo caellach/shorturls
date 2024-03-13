@@ -51,8 +51,9 @@ func authProviderCallback(c *fiber.Ctx) error {
 	verified := false
 
 	if authState.Provider == "discord" {
+		redirectUri := utils.GetRedirectUri(c)
 		// pull username from the token
-		tokenResponse, err := getTokenFromCodeDiscord(code)
+		tokenResponse, err := getTokenFromCodeDiscord(code, redirectUri)
 		if err != nil {
 			return utils.GenerateJsonErrorMessage(c, fiber.StatusInternalServerError, "failed to get token from code", err)
 		}
@@ -146,12 +147,13 @@ func authProviderCallback(c *fiber.Ctx) error {
 	return c.Redirect(authState.Referer + "?a=" + tokenString)
 }
 
-func getTokenFromCodeDiscord(code string) (DiscordTokenResponse, error) {
+func getTokenFromCodeDiscord(code string, redirectUri string) (DiscordTokenResponse, error) {
 	// get the token from the auth provider from the code
 	data := url.Values{}
 	data.Set("grant_type", "authorization_code")
 	data.Set("code", code)
-	data.Set("redirect_uri", "http://localhost:3000/api/auth/callback")
+	// get the redirect uri from the request
+	data.Set("redirect_uri", redirectUri)
 
 	client := &http.Client{
 		Timeout: time.Second * 10,
@@ -231,12 +233,11 @@ func getAuthProviderOAuthURL(c *fiber.Ctx) error {
 	}
 
 	referer := c.Get("Referer")
-	host := c.Get("Host")
 
 	state := utils.GenerateRandomString(16)
 	authProviderBaseUrl = utils.AddQueryParams(authProviderBaseUrl, map[string]string{
 		"state":        state,
-		"redirect_uri": "http://" + host + "/api/auth/callback",
+		"redirect_uri": utils.GetRedirectUri(c),
 	})
 
 	// get request ip
