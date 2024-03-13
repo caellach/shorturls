@@ -1,6 +1,9 @@
 package url
 
 import (
+	"log"
+	"os"
+
 	"github.com/caellach/shorturl/api-server/go/pkg/config"
 	"github.com/caellach/shorturl/api-server/go/pkg/middleware"
 	"github.com/caellach/shorturl/api-server/go/pkg/wordlist"
@@ -17,6 +20,8 @@ var metadataCollection *mongo.Collection
 var shorturlsCollection *mongo.Collection
 
 var websocketConnections = make(map[string][]*websocket.Conn)
+
+var _logger = log.New(os.Stdout, "url: ", log.LstdFlags)
 
 func CreateUrlRoutes(App *fiber.App, MongoClient *mongo.Client) {
 	app = App
@@ -35,7 +40,14 @@ func CreateUrlRoutes(App *fiber.App, MongoClient *mongo.Client) {
 	app.Delete("/u/:id", middleware.AuthRequired(), deleteUrl)
 
 	// websocket route
-	app.Use("/u/ws", websocket.New(urlWs))
+	app.Use(func(c *fiber.Ctx) error {
+		if websocket.IsWebSocketUpgrade(c) {
+			// ensure we have the context in the websocket connection
+			c.Locals("ctx", c.Context())
+		}
+		return c.Next()
+	})
+	app.Get("/u/ws", websocket.New(urlWs))
 
 	// Load the routes for the application
 	// Public routes

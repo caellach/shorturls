@@ -51,6 +51,18 @@ then
 fi
 
 # Configure Nginx for the domain
+echo "proxy_set_header Host $host;
+proxy_set_header X-Forwarded-Host $host;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+proxy_set_header X-Forwarded-Port $server_port;
+proxy_set_header X-Real-IP $remote_addr;" | sudo tee /etc/nginx/conf.d/proxy_headers.conf
+
+echo "proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+proxy_http_version 1.1;
+proxy_read_timeout 70s;" | sudo tee /etc/nginx/conf.d/websocket.conf
+
 echo "server {
     listen 80;
     server_name $domain_name;
@@ -67,24 +79,18 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/$domain_name/privkey.pem;
 
     location /api/ {
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Port $server_port;
-        proxy_set_header X-Real-IP $remote_addr;
+        include /etc/nginx/conf.d/proxy_headers.conf;
+        proxy_pass http://localhost:8080;
+    }
 
+    location /u/ws {
+        include /etc/nginx/conf.d/proxy_headers.conf;
+        include /etc/nginx/conf.d/websocket.conf;
         proxy_pass http://localhost:8080;
     }
 
     location /u/ {
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Port $server_port;
-        proxy_set_header X-Real-IP $remote_addr;
-
+        include /etc/nginx/conf.d/proxy_headers.conf;
         proxy_pass http://localhost:8080;
     }
 
