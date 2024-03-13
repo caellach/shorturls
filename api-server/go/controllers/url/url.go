@@ -16,6 +16,8 @@ var app *fiber.App
 var mongoClient *mongo.Client
 var wordList *wordlist.WordList
 
+var embedUserAgents *[]string
+
 var metadataCollection *mongo.Collection
 var ogpDataCollection *mongo.Collection
 var shorturlsCollection *mongo.Collection
@@ -34,6 +36,8 @@ func CreateUrlRoutes(App *fiber.App, MongoClient *mongo.Client) {
 
 	// Load the word list
 	wordList = wordlist.LoadWordList(&config.ServerConfig.WordList)
+
+	embedUserAgents = &config.ServerConfig.Url.EmbedUserAgents
 
 	// Authenticated routes
 	app.Get("/u/metadata", middleware.AuthRequired(), getUserMetadata)

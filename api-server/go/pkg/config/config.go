@@ -59,6 +59,13 @@ func LoadConfig(configParams *ConfigParams) *Config {
 		Token: TokenConfig{
 			Secret: utils.GenerateRandomString(32),
 		},
+		Url: UrlConfig{
+			EmbedUserAgents: []string{"applebot", "archive", "baiduspider", "bingbot", "discord", "duckduckbot",
+				"facebook", "googlebot", "instagram", "keybase", "linkedin", "messenger", "pinterest", "reddit",
+				"skypeuripreview", "slack", "telegram", "tumblr", "twitter", "viber", "whatsapp", "yandex", "youtube",
+				"zoom",
+			},
+		},
 	}
 
 	configFilePath := configParams.ConfigFilePath

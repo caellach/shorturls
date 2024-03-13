@@ -123,16 +123,6 @@ func getUrls(c *fiber.Ctx) error {
 	return c.JSON(urlsList)
 }
 
-// these are strings that user agents that embed the url will contain
-var embedUserAgents = []string{
-	"discord",
-	"facebook",
-	"linkedin",
-	"slack",
-	"twitter",
-	"whatsapp",
-}
-
 // Redirects to the url with the given id
 func redirectUrlById(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -144,7 +134,7 @@ func redirectUrlById(c *fiber.Ctx) error {
 
 	isEmbed := false
 	userAgent := strings.ToLower(c.Get("User-Agent"))
-	for _, embedUserAgent := range embedUserAgents {
+	for _, embedUserAgent := range *embedUserAgents {
 		if strings.Contains(userAgent, embedUserAgent) {
 			isEmbed = true
 			break
@@ -165,6 +155,10 @@ func redirectUrlById(c *fiber.Ctx) error {
 			return c.Redirect(url.Url)
 		}
 	} else {
+		// log user agent
+		log.Println("user agent:", userAgent)
+
+		// get the url data and update the lastUsed and useCount
 		opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 		update := bson.M{"$set": bson.M{"lastUsed": primitive.DateTime(time.Now().UnixNano() / int64(time.Millisecond))}, "$inc": bson.M{"useCount": 1}}
 		err = shorturlsCollection.FindOneAndUpdate(c.Context(), bson.M{"id": numberId, "deleted": bson.M{"$exists": false}}, update, opts).Decode(&url)

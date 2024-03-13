@@ -22,6 +22,10 @@ type TokenConfig struct {
 	Secret string `json:"secret"`
 }
 
+type UrlConfig struct {
+	EmbedUserAgents []string `json:"embedUserAgents"`
+}
+
 // Config is the configuration for the application
 type Config struct {
 	App       AppConfig       `json:"app"`
@@ -29,6 +33,7 @@ type Config struct {
 	MongoDB   MongoDBConfig   `json:"mongodb"`
 	Providers ProvidersConfig `json:"providers"`
 	Token     TokenConfig     `json:"token"`
+	Url       UrlConfig       `json:"url"`
 }
 
 type ConfigParams struct {
