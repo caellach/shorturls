@@ -1,6 +1,6 @@
 {
     "name": "shorturl-webui",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "The shorturl frontend for testing the various api backends",
     "main": "index.js",
     "scripts": {
