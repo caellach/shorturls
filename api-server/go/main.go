@@ -82,6 +82,9 @@ func main() {
 	}
 
 	var mongoClient = mongo.GetMongoClient(mongoDBConfig)
+	mongo.CreateCollectionsAndIndexes(mongoClient)
+	// create collections and indexes
+
 	LoadRoutes(app, mongoClient)
 
 	log.Fatal(app.Listen(":3000"))

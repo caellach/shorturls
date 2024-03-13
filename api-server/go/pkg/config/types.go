@@ -1,13 +1,13 @@
 package config
 
 type AppConfig struct {
-	Name              string   `json:"app_name"`
+	Name              string   `json:"appName"`
 	Port              int      `json:"port"`
 	Prefork           bool     `json:"prefork"`
 	Concurrency       int      `json:"concurrency"`
-	EnablePrintRoutes bool     `json:"enable_print_routes"`
+	EnablePrintRoutes bool     `json:"enablePrintRoutes"`
 	Debug             bool     `json:"debug"`
-	TrustedProxies    []string `json:"trusted_proxies"`
+	TrustedProxies    []string `json:"trustedProxies"`
 }
 
 type MongoDBConfig struct {
@@ -40,12 +40,12 @@ type ProvidersConfig struct {
 }
 
 type DiscordConfig struct {
-	ApiBaseUrl   string `json:"api_base_url"`
-	ClientID     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
+	ApiBaseUrl   string `json:"apiBaseUrl"`
+	ClientID     string `json:"clientId"`
+	ClientSecret string `json:"clientSecret"`
 }
 
 type WordListConfig struct {
-	FilePath string `json:"file_path"`
-	FileHash string `json:"file_hash"`
+	FilePath string `json:"filePath"`
+	FileHash string `json:"fileHash"`
 }

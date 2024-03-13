@@ -1,9 +1,6 @@
 package auth
 
 import (
-	"log"
-	"os"
-
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/mongo"
 
@@ -20,7 +17,7 @@ var usersCollection *mongo.Collection
 
 var signingSecret []byte
 
-var logger = log.New(os.Stdout, "auth: ", log.LstdFlags)
+// var logger = log.New(os.Stdout, "auth: ", log.LstdFlags)
 
 func initProviders() {
 	validAuthProviders["discord"] = "https://discord.com/oauth2/authorize?client_id=" + discordConfig.ClientID + "&response_type=code&scope=email+identify"
@@ -34,7 +31,7 @@ func CreateAuthRoutes(App *fiber.App, MongoClient *mongo.Client) {
 	discordConfig = &config.ServerConfig.Providers.DiscordConfig
 	mongoClient = MongoClient
 
-	authStatesCollection = mongoClient.Database("shared").Collection("auth_states")
+	authStatesCollection = mongoClient.Database("shared").Collection("authStates")
 	usersCollection = mongoClient.Database("shared").Collection("users")
 
 	initProviders()

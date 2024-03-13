@@ -3,13 +3,13 @@ import { createSlice } from "@reduxjs/toolkit";
 export type AuthClaims = {
   sub: string;
   username: string;
-  display_name?: string;
+  displayName?: string;
   avatar?: string;
   locale?: string;
   provider: string;
-  provider_sub: string;
-  provider_mfa?: boolean;
-  provider_verified?: boolean;
+  providerSub: string;
+  providerMfa?: boolean;
+  providerVerified?: boolean;
   exp: number;
 };
 
@@ -26,7 +26,7 @@ const initialState: AuthState = {
     sub: "",
     username: "",
     provider: "",
-    provider_sub: "",
+    providerSub: "",
     exp: 0,
   },
   accessToken: "",
@@ -40,22 +40,21 @@ export const authSlice = createSlice({
     login: (state, action) => {
       if (action.payload.authTokens) {
         const decodedToken = JSON.parse(
-          atob(action.payload.authTokens.access_token.split(".")[1]),
+          atob(action.payload.authTokens.accessToken.split(".")[1]),
         );
 
         state.claims.sub = decodedToken.sub ?? "";
         state.claims.username = decodedToken.username ?? "";
-        state.claims.display_name = decodedToken.display_name ?? "";
+        state.claims.displayName = decodedToken.displayName ?? "";
         state.claims.avatar = decodedToken.avatar ?? "";
         state.claims.locale = decodedToken.locale ?? "";
         state.claims.provider = decodedToken.provider ?? "";
-        state.claims.provider_sub = decodedToken.provider_sub ?? "";
-        state.claims.provider_mfa = decodedToken.provider_mfa ?? false;
-        state.claims.provider_verified =
-          decodedToken.provider_verified ?? false;
+        state.claims.providerSub = decodedToken.providerSub ?? "";
+        state.claims.providerMfa = decodedToken.providerMfa ?? false;
+        state.claims.providerVerified = decodedToken.providerVerified ?? false;
         state.claims.exp = decodedToken.exp ?? 0;
-        state.accessToken = action.payload.authTokens.access_token ?? "";
-        state.refreshToken = action.payload.authTokens.refresh_token ?? "";
+        state.accessToken = action.payload.authTokens.accessToken ?? "";
+        state.refreshToken = action.payload.authTokens.refreshToken ?? "";
 
         state.isLoggedIn = true;
       }
@@ -66,12 +65,12 @@ export const authSlice = createSlice({
       state.claims = {
         sub: "",
         username: "",
-        display_name: "",
+        displayName: "",
         avatar: "",
         provider: "",
-        provider_sub: "",
-        provider_mfa: false,
-        provider_verified: false,
+        providerSub: "",
+        providerMfa: false,
+        providerVerified: false,
         exp: 0,
       };
       state.accessToken = "";

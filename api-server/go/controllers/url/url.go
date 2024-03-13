@@ -51,5 +51,6 @@ func CreateUrlRoutes(App *fiber.App, MongoClient *mongo.Client) {
 
 	// Load the routes for the application
 	// Public routes
+	app.Get("/u/f/:id", fakeOGPResult)
 	app.Get("/u/:id", redirectUrlById)
 }

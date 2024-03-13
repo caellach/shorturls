@@ -69,7 +69,7 @@ func authProviderCallback(c *fiber.Ctx) error {
 		avatar = discordUserInfo.Avatar
 		email = discordUserInfo.Email
 		locale = discordUserInfo.Locale
-		mfaEnabled = discordUserInfo.MFAEnabled
+		mfaEnabled = discordUserInfo.MfaEnabled
 		verified = discordUserInfo.Verified
 	} else {
 		return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "invalid provider", errors.New("invalid provider"))
@@ -117,16 +117,16 @@ func authProviderCallback(c *fiber.Ctx) error {
 	// create a new JWT token
 	expiresAt := time.Now().Add(time.Hour * 6).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub":          updatedDocument.Id.Hex(),
-		"username":     updatedDocument.Username,
-		"display_name": updatedDocument.DisplayName,
-		"avatar":       updatedDocument.Avatar,
-		"locale":       updatedDocument.Locale,
-		"mfa_enabled":  updatedDocument.MFAEnabled,
-		"verified":     updatedDocument.Verified,
-		"provider":     authState.Provider,
-		"provider_sub": providerId,
-		"exp":          expiresAt,
+		"sub":         updatedDocument.Id.Hex(),
+		"username":    updatedDocument.Username,
+		"displayName": updatedDocument.DisplayName,
+		"avatar":      updatedDocument.Avatar,
+		"locale":      updatedDocument.Locale,
+		"mfaEnabled":  updatedDocument.MfaEnabled,
+		"verified":    updatedDocument.Verified,
+		"provider":    authState.Provider,
+		"providerSub": providerId,
+		"exp":         expiresAt,
 	})
 
 	// sign the token
@@ -137,13 +137,6 @@ func authProviderCallback(c *fiber.Ctx) error {
 		return utils.GenerateJsonErrorMessage(c, fiber.StatusInternalServerError, "failed to sign token", err)
 	}
 
-	// return the token
-	/*return c.JSON(fiber.Map{
-		"access_token":  tokenString,
-		"expires_at":    expiresAt,
-		"token_type":    "Bearer",
-		"refresh_token": nil,
-	})*/
 	return c.Redirect(authState.Referer + "?a=" + tokenString)
 }
 

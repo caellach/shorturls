@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/caellach/shorturl/api-server/go/pkg/middleware"
@@ -39,7 +40,7 @@ func deleteUrl(c *fiber.Ctx) error {
 	// start the transaction
 	callback := func(sessionContext mongo.SessionContext) (interface{}, error) {
 		// delete the url
-		result, err := shorturlsCollection.UpdateOne(c.Context(), bson.M{"id": numberId, "user_id": user.Id, "deleted": bson.M{"$exists": false}},
+		result, err := shorturlsCollection.UpdateOne(c.Context(), bson.M{"id": numberId, "userId": user.Id, "deleted": bson.M{"$exists": false}},
 			bson.M{"$set": bson.M{"deleted": primitive.DateTime(time.Now().UnixNano() / int64(time.Millisecond))}})
 		if err != nil {
 			return nil, utils.GenerateJsonErrorMessage(c, fiber.StatusInternalServerError, "failed to delete url", err)
@@ -50,8 +51,8 @@ func deleteUrl(c *fiber.Ctx) error {
 		}
 
 		// update the user metadata, decrement the active count, FindOneAndUpdate
-		filter := bson.M{"user_id": user.Id}
-		update := bson.M{"$inc": bson.M{"active_count": -1}}
+		filter := bson.M{"userId": user.Id}
+		update := bson.M{"$inc": bson.M{"activeCount": -1}}
 		opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 		var userMetadata UserUrlMetadata
 		err = metadataCollection.FindOneAndUpdate(c.Context(), filter, update, opts).Decode(&userMetadata)
@@ -90,7 +91,7 @@ func getUrls(c *fiber.Ctx) error {
 	user := c.Locals("user").(middleware.AuthUser)
 
 	opts := options.Find().SetSort(bson.D{{Key: "created", Value: -1}})
-	cursor, err := shorturlsCollection.Find(c.Context(), bson.M{"user_id": user.Id, "deleted": nil}, opts)
+	cursor, err := shorturlsCollection.Find(c.Context(), bson.M{"userId": user.Id, "deleted": nil}, opts)
 	if err != nil {
 		return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "failed to find urls", err)
 	}
@@ -122,6 +123,16 @@ func getUrls(c *fiber.Ctx) error {
 	return c.JSON(urlsList)
 }
 
+// these are strings that user agents that embed the url will contain
+var embedUserAgents = []string{
+	"discord",
+	"facebook",
+	"linkedin",
+	"slack",
+	"twitter",
+	"whatsapp",
+}
+
 // Redirects to the url with the given id
 func redirectUrlById(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -131,29 +142,51 @@ func redirectUrlById(c *fiber.Ctx) error {
 		return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "invalid id", err)
 	}
 
-	var url UrlDocument
-	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
-	update := bson.M{"$set": bson.M{"last_used": primitive.DateTime(time.Now().UnixNano() / int64(time.Millisecond))}, "$inc": bson.M{"use_count": 1}}
-	err = shorturlsCollection.FindOneAndUpdate(c.Context(), bson.M{"id": numberId, "deleted": bson.M{"$exists": false}}, update, opts).Decode(&url)
-	if err != nil {
-		return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "failed to get url", err)
+	isEmbed := false
+	userAgent := strings.ToLower(c.Get("User-Agent"))
+	for _, embedUserAgent := range embedUserAgents {
+		if strings.Contains(userAgent, embedUserAgent) {
+			isEmbed = true
+			break
+		}
 	}
 
-	go func() {
-		url.Id = id // set the id to the word id
-
-		jsonMessage, err := json.Marshal(map[string]interface{}{"action": "updated", "data": url})
+	var url UrlDocument
+	if isEmbed {
+		// get the url data without updating
+		err = shorturlsCollection.FindOne(c.Context(), bson.M{"id": numberId, "deleted": bson.M{"$exists": false}}).Decode(&url)
 		if err != nil {
-			log.Println("failed to marshal json message:", err)
-			return
+			return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "failed to get url", err)
 		}
 
-		for _, conn := range websocketConnections[url.UserId] {
-			conn.WriteMessage(websocket.TextMessage, jsonMessage)
+		if !url.OgpDataId.IsZero() {
+			return c.Redirect(fmt.Sprintf("/u/f/%s", id))
+		} else {
+			return c.Redirect(url.Url)
 		}
-	}()
+	} else {
+		opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+		update := bson.M{"$set": bson.M{"lastUsed": primitive.DateTime(time.Now().UnixNano() / int64(time.Millisecond))}, "$inc": bson.M{"useCount": 1}}
+		err = shorturlsCollection.FindOneAndUpdate(c.Context(), bson.M{"id": numberId, "deleted": bson.M{"$exists": false}}, update, opts).Decode(&url)
+		if err != nil {
+			return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "failed to get url", err)
+		}
 
-	return c.Redirect(url.Url)
+		go func() {
+			url.Id = id // set the id to the word id
+			jsonMessage, err := json.Marshal(map[string]interface{}{"action": "updated", "data": url})
+			if err != nil {
+				log.Println("failed to marshal json message:", err)
+				return
+			}
+
+			for _, conn := range websocketConnections[url.UserId] {
+				conn.WriteMessage(websocket.TextMessage, jsonMessage)
+			}
+		}()
+
+		return c.Redirect(url.Url)
+	}
 }
 
 func getUserMetadata(c *fiber.Ctx) error {
@@ -211,8 +244,8 @@ func putUrl(c *fiber.Ctx) error {
 		}
 
 		// update the user metadata, increment the active count, FindOneAndUpdate
-		filter := bson.M{"user_id": user.Id}
-		update := bson.M{"$inc": bson.M{"active_count": 1, "created_count": 1}, "$set": bson.M{"last_created": url.Created}}
+		filter := bson.M{"userId": user.Id}
+		update := bson.M{"$inc": bson.M{"activeCount": 1, "createdCount": 1}, "$set": bson.M{"lastCreated": url.Created}}
 		opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 		var userMetadata UserUrlMetadata
 		err = metadataCollection.FindOneAndUpdate(c.Context(), filter, update, opts).Decode(&userMetadata)
@@ -253,7 +286,7 @@ func putUrl(c *fiber.Ctx) error {
 func getMetadataForUser(c *fiber.Ctx) (*UserUrlMetadata, error) {
 	user := c.Locals("user").(middleware.AuthUser)
 
-	filter := bson.M{"user_id": user.Id}
+	filter := bson.M{"userId": user.Id}
 
 	var defaultUserUrlMetadata UserUrlMetadata = UserUrlMetadata{
 		UserId:       user.Id,
@@ -278,4 +311,41 @@ func getMetadataForUser(c *fiber.Ctx) (*UserUrlMetadata, error) {
 	}
 
 	return result, nil
+}
+
+func fakeOGPResult(c *fiber.Ctx) error {
+	// return an html page with the ogp data
+	// this is a fake response to test the ogp data
+
+	// get id
+	id := c.Params("id")
+	log.Println("id:", id)
+
+	ogpData := OgpData{
+		SiteName:    "IMDb",
+		Title:       "The Rock",
+		Type:        "video.movie",
+		Url:         "https://o7.rip/u/DespiseDevelopmentLetterBang",
+		Image:       "https://static.miraheze.org/greatcharacterswiki/thumb/8/86/D75zqo-a1d18cbe-acbc-4f91-9009-25b63e297eee.jpg/330px-D75zqo-a1d18cbe-acbc-4f91-9009-25b63e297eee.jpg",
+		Description: "The Rock is a 1996 American action thriller film directed by Michael Bay, produced by Don Simpson and Jerry Bruckheimer, and written by David Weisberg and Douglas S. Cook.",
+	}
+	// get stored ogp data from mongo
+	/*data, err := ogpCollection.FindOne(c.Context(), bson.M{"id": id})
+	if err != nil {
+		return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "failed to get ogp data", err)
+	}*/
+
+	c.Type("html")
+	return c.SendString(
+		`<html prefix="og: http://ogp.me/ns#">
+	<head>
+		<meta name="twitter:card" content="summary_large_image">
+		<meta property="og:site_name" content="` + ogpData.SiteName + `" />
+		<meta property="og:title" content="` + ogpData.Title + `" />
+		<meta property="og:type" content="` + ogpData.Type + `" />
+		<meta property="og:url" content="` + ogpData.Url + `" />
+		<meta property="og:image" content="` + ogpData.Image + `" />
+		<meta property="og:description" content="` + ogpData.Description + `" />
+	</head><body>` + utils.GenerateRandomString(32) + `</body>
+</html>`)
 }

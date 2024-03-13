@@ -33,7 +33,7 @@ func AuthRequired() fiber.Handler {
 		"username":     updatedDocument.Username,
 		"avatar":       updatedDocument.Avatar,
 		"provider":     authState.Provider,
-		"provider_sub": providerId,
+		"providerSub": providerId,
 		"exp":          expiresAt,*/
 		// If the token is valid, store the user information in Locals
 		user := AuthUser{
@@ -41,7 +41,7 @@ func AuthRequired() fiber.Handler {
 			Username:    parsedToken.Claims.(jwt.MapClaims)["username"].(string),
 			Avatar:      parsedToken.Claims.(jwt.MapClaims)["avatar"].(string),
 			Provider:    parsedToken.Claims.(jwt.MapClaims)["provider"].(string),
-			ProviderSub: parsedToken.Claims.(jwt.MapClaims)["provider_sub"].(string),
+			ProviderSub: parsedToken.Claims.(jwt.MapClaims)["providerSub"].(string),
 			ExpiresAt:   int64(parsedToken.Claims.(jwt.MapClaims)["exp"].(float64)),
 		}
 		c.Locals("user", user)

@@ -135,7 +135,7 @@ const ShorturlsComponent: FC<ShorturlsProps> = ({
   };
 
   const handleCopyShortUrl = (data: ShorturlData) => {
-    navigator.clipboard.writeText(data.short_url);
+    navigator.clipboard.writeText(data.shortUrl);
   };
 
   const handleCopyUrl = (data: ShorturlData) => {
@@ -274,11 +274,11 @@ const ShorturlsComponent: FC<ShorturlsProps> = ({
               label="Uses"
               dataKey="uses"
               width={width * 0.05}
-              cellDataGetter={({ rowData }) => rowData.use_count ?? 0}
+              cellDataGetter={({ rowData }) => rowData.useCount ?? 0}
             />
             <Column
               label="Last Used"
-              dataKey="last_used"
+              dataKey="lastUsed"
               width={width * 0.15}
               cellRenderer={lastUsedCellRenderer}
             />

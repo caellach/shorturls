@@ -74,7 +74,7 @@ func GenerateErrorMessage(message string, err error) *fiber.Map {
 	}
 	if env.Config.Debug {
 		if err != nil {
-			m["error_message"] = err.Error()
+			m["errorMessage"] = err.Error()
 		}
 	}
 

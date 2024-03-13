@@ -2,17 +2,27 @@ package url
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
+type OgpData struct {
+	Description string `json:"description" bson:"description"`
+	Image       string `json:"image" bson:"image"`
+	SiteName    string `json:"siteName" bson:"siteName"`
+	Title       string `json:"title" bson:"title"`
+	Type        string `json:"type" bson:"type"`
+	Url         string `json:"url" bson:"url"`
+}
+
 type PutUrlRequest struct {
 	Url string `json:"url"`
 }
 
 type UrlDocument struct {
-	Id       string             `json:"id" bson:"id"`
-	UserId   string             `json:"user_id" bson:"user_id"`
-	Url      string             `json:"url" bson:"url"`
-	ShortUrl string             `json:"short_url" bson:"-"`
-	UseCount int                `json:"use_count" bson:"use_count"`
-	LastUsed primitive.DateTime `json:"last_used,omitempty" bson:"last_used,omitempty"`
+	Id        string             `json:"id" bson:"id"`
+	UserId    string             `json:"userId" bson:"userId"`
+	Url       string             `json:"url" bson:"url"`
+	ShortUrl  string             `json:"shortUrl" bson:"-"`
+	UseCount  int                `json:"useCount" bson:"useCount"`
+	LastUsed  primitive.DateTime `json:"lastUsed,omitempty" bson:"lastUsed,omitempty"`
+	OgpDataId primitive.ObjectID `json:"ogpId,omitempty" bson:"ogpId,omitempty"`
 
 	// DateTime fields
 	Created primitive.DateTime `json:"created" bson:"created"`
@@ -21,8 +31,8 @@ type UrlDocument struct {
 }
 
 type UserUrlMetadata struct {
-	UserId       string             `json:"user_id" bson:"user_id"`
-	ActiveCount  int                `json:"active_count" bson:"active_count"`
-	CreatedCount int                `json:"created_count" bson:"created_count"`
-	LastCreated  primitive.DateTime `json:"last_created" bson:"last_created"`
+	UserId       string             `json:"userId" bson:"userId"`
+	ActiveCount  int                `json:"activeCount" bson:"activeCount"`
+	CreatedCount int                `json:"createdCount" bson:"createdCount"`
+	LastCreated  primitive.DateTime `json:"lastCreated" bson:"lastCreated"`
 }

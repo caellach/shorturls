@@ -14,12 +14,12 @@ const Main = () => {
     const handleAuth = async () => {
       const searchParams = new URLSearchParams(location.search);
       // clear the code from the url
-      const access_token = searchParams.get("a"); // a for access_token
-      if (access_token) {
-        console.log("access_token", access_token);
+      const accessToken = searchParams.get("a"); // a for accessToken
+      if (accessToken) {
+        console.log("accessToken", accessToken);
         // dispatch the token to the store
         console.log("auth", auth);
-        dispatch(login({ authTokens: { access_token, refresh_token: null } }));
+        dispatch(login({ authTokens: { accessToken, refreshToken: null } }));
         window.history.replaceState({}, document.title, location.pathname);
       }
     };
