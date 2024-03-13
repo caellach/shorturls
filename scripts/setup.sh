@@ -15,7 +15,8 @@ sudo apt-get install -y \
     ca-certificates \
     curl \
     gnupg \
-    lsb-release
+    lsb-release\
+    unzip
 
 # Check if Docker is installed, if not, install it
 if ! command -v docker &> /dev/null
