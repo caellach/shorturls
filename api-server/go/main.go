@@ -2,19 +2,25 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/bytedance/sonic"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 
 	"github.com/caellach/shorturl/api-server/go/pkg/config"
 	"github.com/caellach/shorturl/api-server/go/pkg/mongo"
 )
 
+var _logger = log.New(os.Stdout, "main: ", log.LstdFlags)
+
 func main() {
+	_logger.Println("Starting server...")
+
 	// load config
 	_config := config.LoadConfig(config.DefaultConfigParams())
 
@@ -28,12 +34,15 @@ func main() {
 	}
 
 	if len(_config.App.TrustedProxies) > 0 {
+		_logger.Println("Trusted proxies enabled: ", _config.App.TrustedProxies)
 		fiberConfig.ProxyHeader = "X-Forwarded-For"
 		fiberConfig.TrustedProxies = _config.App.TrustedProxies
 		fiberConfig.EnableTrustedProxyCheck = true
 	}
 
 	app := fiber.New(fiberConfig)
+
+	app.Use(logger.New())
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",

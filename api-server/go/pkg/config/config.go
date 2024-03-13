@@ -8,6 +8,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -15,6 +16,8 @@ import (
 	"github.com/caellach/shorturl/api-server/go/pkg/env"
 	"github.com/caellach/shorturl/api-server/go/pkg/utils"
 )
+
+var logger = log.New(os.Stdout, "config: ", log.LstdFlags)
 
 func DefaultConfigParams() *ConfigParams {
 	return &ConfigParams{
@@ -28,6 +31,8 @@ func LoadConfig(configParams *ConfigParams) *Config {
 	if ServerConfig != nil {
 		return ServerConfig
 	}
+
+	logger.Println("Loading config")
 
 	// Set the default configuration
 	config := Config{
@@ -144,6 +149,8 @@ func LoadConfig(configParams *ConfigParams) *Config {
 	env.Config.Debug = config.App.Debug
 
 	ServerConfig = &config
+
+	logger.Println("Config loaded")
 
 	return &config
 }

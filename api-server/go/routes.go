@@ -14,6 +14,7 @@ import (
 // LoadRoutes loads all the routes for the application
 func LoadRoutes(App *fiber.App, MongoClient *mongo.Client) {
 	// Load the routes for the application
+	_logger.Println("Loading routes...")
 
 	// Health routes
 	health.CreateHealthRoutes(App)
@@ -23,4 +24,6 @@ func LoadRoutes(App *fiber.App, MongoClient *mongo.Client) {
 
 	// Url routes
 	url.CreateUrlRoutes(App, MongoClient)
+
+	_logger.Println("Routes loaded!")
 }

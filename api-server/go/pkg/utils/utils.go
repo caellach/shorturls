@@ -3,6 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"math/rand"
+	"net"
 	"net/url"
 	"strings"
 	"unicode"
@@ -112,8 +113,18 @@ func getDefaultPort(protocol string) string {
 	return "80"
 }
 
-func GetRedirectUri(c *fiber.Ctx) string {
+func GetHost(c *fiber.Ctx) string {
+	host := c.Hostname()
 	port := c.Get("X-Forwarded-Port")
+	if port == "" {
+		rhost, rport, err := net.SplitHostPort(host)
+		if err != nil {
+			port = ""
+		} else {
+			host = rhost
+			port = rport
+		}
+	}
 	protocol := c.Protocol()
 
 	if port != "" && port != getDefaultPort(protocol) {
@@ -122,5 +133,9 @@ func GetRedirectUri(c *fiber.Ctx) string {
 		port = ""
 	}
 
-	return protocol + "://" + c.Hostname() + port + "/api/auth/callback"
+	return protocol + "://" + host + port
+}
+
+func GetRedirectUri(c *fiber.Ctx) string {
+	return GetHost(c) + "/api/auth/callback"
 }

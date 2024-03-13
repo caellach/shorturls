@@ -16,8 +16,8 @@ Write-Host "Docker User: $dockerUser"
 
 # build and push the docker images
 Push-Location ../api-server/go
-docker build -t ${dockerUser}/api-server-go:latest .
-docker push ${dockerUser}/api-server-go:latest
+docker build -t ${dockerUser}/shorturls-api-go:latest .
+docker push ${dockerUser}/shorturls-api-go:latest
 Pop-Location
 
 # build and deploy the webui
@@ -35,7 +35,7 @@ Compress-Archive -Path ./dist/* -DestinationPath ./artifacts/${zipFile}
 
 # deploy to remote server
 # deploy the server
-plink -batch -P 22 -ssh ${remoteUser}@${remoteServer} "docker stop shorturls-api-go || true && docker rm shorturls-api-go || true && docker run -d --restart unless-stopped -v /etc/shorturls-api-go/config.json:/app/config.json -v /etc/shorturls-api-go/wordlist.json:/app/wordlist.json --name shorturls-api-go -p 8080:8080 ${dockerUser}/shorturls-api-go:latest"
+plink -batch -P 22 -ssh ${remoteUser}@${remoteServer} "docker pull caellach/shorturls-api-go:latest && docker stop shorturls-api-go || true && docker rm shorturls-api-go || true && docker run -d --restart unless-stopped -v /etc/shorturls-api-go/config.json:/app/config.json -v /etc/shorturls-api-go/wordlist.json:/app/wordlist.json --name shorturls-api-go -p 8080:3000 ${dockerUser}/shorturls-api-go:latest"
 pscp -P 22 ./artifacts/${zipFile} ${remoteUser}@${remoteServer}:/var/www/
 plink -batch -P 22 -ssh ${remoteUser}@${remoteServer} "cd /var/www/ && rm -rf ./html && unzip -o ./${zipFile} -d ./html && rm -f ./${zipFile}"
 Pop-Location

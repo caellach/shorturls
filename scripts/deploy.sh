@@ -32,6 +32,7 @@ cd $repo_path/api-server/go
 # docker build -t shorturls-api .
 
 # Deploy the server application
+docker pull $git_repo_user/shorturls-api-go:latest
 docker stop shorturls-api-go || true
 docker rm shorturls-api-go || true
 docker run -d --restart unless-stopped -v /etc/shorturls-api-go/config.json:/app/config.json -v /etc/shorturls-api-go/wordlist.json:/app/wordlist.json --name shorturls-api-go -p 8080:8080 $git_repo_user/shorturls-api-go:latest
