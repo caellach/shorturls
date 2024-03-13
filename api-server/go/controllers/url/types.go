@@ -3,12 +3,13 @@ package url
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type OgpData struct {
-	Description string `json:"description" bson:"description"`
-	Image       string `json:"image" bson:"image"`
-	SiteName    string `json:"siteName" bson:"siteName"`
-	Title       string `json:"title" bson:"title"`
-	Type        string `json:"type" bson:"type"`
-	Url         string `json:"url" bson:"url"`
+	Id          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Description string             `json:"description" bson:"description"`
+	Image       string             `json:"image" bson:"image"`
+	SiteName    string             `json:"siteName" bson:"siteName"`
+	Title       string             `json:"title" bson:"title"`
+	Type        string             `json:"type" bson:"type"`
+	Url         string             `json:"url" bson:"url"`
 }
 
 type PutUrlRequest struct {
@@ -22,7 +23,7 @@ type UrlDocument struct {
 	ShortUrl  string             `json:"shortUrl" bson:"-"`
 	UseCount  int                `json:"useCount" bson:"useCount"`
 	LastUsed  primitive.DateTime `json:"lastUsed,omitempty" bson:"lastUsed,omitempty"`
-	OgpDataId primitive.ObjectID `json:"ogpId,omitempty" bson:"ogpId,omitempty"`
+	OgpDataId primitive.ObjectID `bson:"ogpDataId,omitempty"`
 
 	// DateTime fields
 	Created primitive.DateTime `json:"created" bson:"created"`

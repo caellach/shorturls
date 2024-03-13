@@ -160,7 +160,7 @@ func redirectUrlById(c *fiber.Ctx) error {
 		}
 
 		if !url.OgpDataId.IsZero() {
-			return c.Redirect(fmt.Sprintf("/u/f/%s", id))
+			return c.Redirect(fmt.Sprintf("/u/f/%s", url.OgpDataId.Hex()))
 		} else {
 			return c.Redirect(url.Url)
 		}
@@ -321,19 +321,27 @@ func fakeOGPResult(c *fiber.Ctx) error {
 	id := c.Params("id")
 	log.Println("id:", id)
 
-	ogpData := OgpData{
+	// convert the id to the object id
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "invalid id", err)
+	}
+
+	/*ogpData := OgpData{
+		Id:          primitive.NewObjectID(),
 		SiteName:    "IMDb",
 		Title:       "The Rock",
 		Type:        "video.movie",
 		Url:         "https://o7.rip/u/DespiseDevelopmentLetterBang",
 		Image:       "https://static.miraheze.org/greatcharacterswiki/thumb/8/86/D75zqo-a1d18cbe-acbc-4f91-9009-25b63e297eee.jpg/330px-D75zqo-a1d18cbe-acbc-4f91-9009-25b63e297eee.jpg",
 		Description: "The Rock is a 1996 American action thriller film directed by Michael Bay, produced by Don Simpson and Jerry Bruckheimer, and written by David Weisberg and Douglas S. Cook.",
-	}
+	}*/
 	// get stored ogp data from mongo
-	/*data, err := ogpCollection.FindOne(c.Context(), bson.M{"id": id})
+	var ogpData OgpData
+	err = ogpDataCollection.FindOne(c.Context(), bson.M{"_id": objectId}).Decode(&ogpData)
 	if err != nil {
 		return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "failed to get ogp data", err)
-	}*/
+	}
 
 	c.Type("html")
 	return c.SendString(

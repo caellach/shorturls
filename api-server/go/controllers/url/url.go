@@ -17,6 +17,7 @@ var mongoClient *mongo.Client
 var wordList *wordlist.WordList
 
 var metadataCollection *mongo.Collection
+var ogpDataCollection *mongo.Collection
 var shorturlsCollection *mongo.Collection
 
 var websocketConnections = make(map[string][]*websocket.Conn)
@@ -28,6 +29,7 @@ func CreateUrlRoutes(App *fiber.App, MongoClient *mongo.Client) {
 	mongoClient = MongoClient
 
 	metadataCollection = mongoClient.Database("shorturls").Collection("metadata")
+	ogpDataCollection = mongoClient.Database("shorturls").Collection("ogpData")
 	shorturlsCollection = mongoClient.Database("shorturls").Collection("urls")
 
 	// Load the word list
