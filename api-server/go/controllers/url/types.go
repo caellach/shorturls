@@ -9,10 +9,15 @@ type OgpData struct {
 	SiteName    string             `json:"siteName" bson:"siteName"`
 	Title       string             `json:"title" bson:"title"`
 	Type        string             `json:"type" bson:"type"`
-	Url         string             `json:"url" bson:"url"`
+	Url         string             `json:"url,omitempty" bson:"url,omitempty"`     // for the retrieval of remote OgpData
+	UrlId       string             `json:"urlId,omitempty" bson:"urlId,omitempty"` // for storing the local urlId
 }
 
 type PutUrlRequest struct {
+	Url string `json:"url"`
+}
+
+type GetSiteEmbedRequest struct {
 	Url string `json:"url"`
 }
 

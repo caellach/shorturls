@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 
@@ -16,6 +18,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"golang.org/x/net/html"
 
 	"github.com/caellach/shorturl/api-server/go/pkg/wordlist"
 )
@@ -126,20 +129,22 @@ func getUrls(c *fiber.Ctx) error {
 // Redirects to the url with the given id
 func redirectUrlById(c *fiber.Ctx) error {
 	id := c.Params("id")
+	// get search query from url; this determines if we should only redirect or potentially embed
+	isRedirect := c.Context().QueryArgs().Has("r")
 
 	numberId, err := getNumberIdFromWordId(id)
 	if err != nil {
 		return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "invalid id", err)
 	}
 
-	isEmbed := false
+	isEmbed := !isRedirect
 	userAgent := strings.ToLower(c.Get("User-Agent"))
-	for _, embedUserAgent := range *embedUserAgents {
+	/*for _, embedUserAgent := range *embedUserAgents {
 		if strings.Contains(userAgent, embedUserAgent) {
 			isEmbed = true
 			break
 		}
-	}
+	}*/
 
 	var url UrlDocument
 	if isEmbed {
@@ -307,6 +312,110 @@ func getMetadataForUser(c *fiber.Ctx) (*UserUrlMetadata, error) {
 	return result, nil
 }
 
+func getSiteEmbed(c *fiber.Ctx) error {
+	// get the url from the request body, json
+	var siteEmbedRequest GetSiteEmbedRequest
+	if err := c.BodyParser(&siteEmbedRequest); err != nil {
+		return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "content-type must be 'application/json'", err)
+	}
+
+	// validate the url
+	if !isValidUrl(siteEmbedRequest.Url) {
+		return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, fmt.Sprintf("invalid url: %s", siteEmbedRequest.Url), fmt.Errorf("invalid url: %s", siteEmbedRequest.Url))
+	}
+
+	// get the page at the url
+	req, err := http.NewRequest("GET", siteEmbedRequest.Url, nil)
+	if err != nil {
+		return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "failed to create request", err)
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		if err == io.EOF {
+			// expected error
+		} else {
+			return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "failed to get response", err)
+		}
+	}
+	defer resp.Body.Close()
+
+	// 500kb limit; we should have all the meta tags by then
+	limitedReaderRespBody := io.LimitReader(resp.Body, 500*1000)
+
+	// get all meta tags
+	startTime := time.Now()
+	metaTags, err := parseMetaTags(limitedReaderRespBody)
+	endTime := time.Now()
+	log.Println("parseMetaTags time:", endTime.Sub(startTime))
+	if err != nil {
+		return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "failed to parse meta tags", err)
+	}
+
+	// get the ogp data
+	ogpData := OgpData{
+		Id:          primitive.NewObjectID(),
+		SiteName:    metaTags["og:site_name"],
+		Title:       metaTags["og:title"],
+		Type:        metaTags["og:type"],
+		Url:         metaTags["og:url"],
+		Image:       metaTags["og:image"],
+		Description: metaTags["og:description"],
+	}
+
+	// fill in gaps if the og tags are missing
+
+	// return the data
+	return c.JSON(ogpData)
+}
+
+func getAttr(attrs []html.Attribute, key string) string {
+	for _, attr := range attrs {
+		if strings.EqualFold(attr.Key, key) {
+			return attr.Val
+		}
+	}
+	return ""
+}
+
+func parseMetaTags(r io.Reader) (map[string]string, error) {
+	doc, err := html.Parse(r)
+	if err != nil {
+		return nil, err
+	}
+
+	metaTags := make(map[string]string)
+	var f func(*html.Node)
+	nodes := 0
+	f = func(n *html.Node) {
+		//log.Println("node:", n.Data, n.Type)
+		if n.Type == html.ElementNode {
+			nodes++
+			if n.Data == "meta" {
+				name := getAttr(n.Attr, "name")
+				property := getAttr(n.Attr, "property")
+				content := getAttr(n.Attr, "content")
+				if name != "" {
+					metaTags[name] = content
+				} else if property != "" {
+					metaTags[property] = content
+				}
+			} else if n.Data == "body" {
+				// Stop parsing when we hit the body tag
+				return
+			}
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+			f(c)
+		}
+	}
+	f(doc)
+
+	return metaTags, nil
+}
+
 func fakeOGPResult(c *fiber.Ctx) error {
 	// return an html page with the ogp data
 	// this is a fake response to test the ogp data
@@ -337,6 +446,10 @@ func fakeOGPResult(c *fiber.Ctx) error {
 		return utils.GenerateJsonErrorMessage(c, fiber.StatusBadRequest, "failed to get ogp data", err)
 	}
 
+	// get the worded urlId from the ogp data's urlId
+	words := wordlist.GetWordsFromId(wordList, ogpData.UrlId)
+	redirectUrl := generateFullShortUrl(c, words) + "?r"
+
 	c.Type("html")
 	return c.SendString(
 		`<html prefix="og: http://ogp.me/ns#">
@@ -345,9 +458,12 @@ func fakeOGPResult(c *fiber.Ctx) error {
 		<meta property="og:site_name" content="` + ogpData.SiteName + `" />
 		<meta property="og:title" content="` + ogpData.Title + `" />
 		<meta property="og:type" content="` + ogpData.Type + `" />
-		<meta property="og:url" content="` + ogpData.Url + `" />
+		<meta property="og:url" content="` + redirectUrl + `" />
 		<meta property="og:image" content="` + ogpData.Image + `" />
 		<meta property="og:description" content="` + ogpData.Description + `" />
-	</head><body>` + utils.GenerateRandomString(32) + `</body>
+		<meta http-equiv="refresh" content="0;url=` + redirectUrl + `">
+		<script type="text/javascript">window.location.href = "` + redirectUrl + `"</script>
+	</head>
+	<body><a href="` + redirectUrl + `">redirect</a></body>
 </html>`)
 }
